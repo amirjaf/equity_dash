@@ -200,6 +200,7 @@ class PieChartAIO(html.Div):
 
         return pie_chart
 
+    @cache.memoize()
     def global_store(self, dict, var1, var2):
         if dict['ocounty'] == 'all':
             table = cross_tab(self.df, var1, var2)
@@ -210,7 +211,8 @@ class PieChartAIO(html.Div):
     @cache.memoize()
     def make_pie_charts(self, data):
         table = self.global_store(data['filters'], data['row_name'], data['column_name'])
-        return self.pie_charts_grid(self.create_pie_charts(table))
+        grid_charts = self.pie_charts_grid(self.create_pie_charts(table))
+        return grid_charts
 
     def register_callbacks(self):
         @callback(
