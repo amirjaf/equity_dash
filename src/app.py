@@ -15,8 +15,7 @@ from dash import Input, Output, callback
 
 # local imports
 from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK, USE_RELOADER
-from components import navbar, footer
-from components.navbar_vertical import navbar_vertical
+from components import navbar, footer, navbar_vertical
 
 from server import server
 
