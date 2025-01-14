@@ -140,7 +140,6 @@ class PieChartAIO(html.Div):
         self.register_callbacks()
 
     # methods
-    @cache.memoize()
     def pie_charts_grid(self, pie_chart_list):
         return dbc.Row(
             [
@@ -151,7 +150,6 @@ class PieChartAIO(html.Div):
             align="start"
         )
 
-    @cache.memoize()
     def create_pie_charts(self, table):
         pie_charts = []
 
@@ -162,7 +160,6 @@ class PieChartAIO(html.Div):
 
         return pie_charts
 
-    @cache.memoize()
     def get_pie_chart_data(self, row, index):
         # Prepare data for the pie chart
         row_data = row.values  # Extract the values from the row
@@ -203,13 +200,17 @@ class PieChartAIO(html.Div):
 
         return pie_chart
 
-    @cache.memoize()
     def global_store(self, dict, var1, var2):
         if dict['ocounty'] == 'all':
             table = cross_tab(self.df, var1, var2)
         else:
             table = cross_tab(filter_df(self.df, dict), var1, var2)
         return table
+
+    @cache.memoize()
+    def make_pie_charts(self, data):
+        table = self.global_store(data['filters'], data['row_name'], data['column_name'])
+        return self.pie_charts_grid(self.create_pie_charts(table))
 
     def register_callbacks(self):
         @callback(
@@ -232,5 +233,5 @@ class PieChartAIO(html.Div):
             Input(self.ids.store(self.aio_id), 'data')
         )
         def update_graph(data):
-            table = self.global_store(data['filters'], data['row_name'], data['column_name'])
-            return self.pie_charts_grid(self.create_pie_charts(table))
+            return self.make_pie_charts(data)
+

@@ -13,45 +13,32 @@ from flask_login import LoginManager
 import os
 from dash import Input, Output, callback
 
-
 # local imports
-from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK
+from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK, USE_RELOADER
 from components import navbar, footer
 from components.navbar_vertical import navbar_vertical
 
 from server import server
+
 dash_app = dash.Dash(
     __name__,
     server=server,
-    use_pages=True,    # turn on Dash pages
+    use_pages=True,  # turn on Dash pages
     external_stylesheets=[
         dbc.themes.BOOTSTRAP,
         dbc.icons.FONT_AWESOME
     ],  # fetch the proper css items we want
     meta_tags=[
-        {   # check if device is a mobile device. This is a must if you do any mobile styling
+        {  # check if device is a mobile device. This is a must if you do any mobile styling
             'name': 'viewport',
             'content': 'width=device-width, initial-scale=1'
         }
     ],
     suppress_callback_exceptions=True,
+    url_base_pathname="/",
     title='Dash app structure'
 )
 
-server.config.update(SECRET_KEY=os.getenv('SECRET_KEY'))
-
-# Login manager object will be used to login / logout users
-# login_manager = LoginManager()
-# login_manager.init_app(server)
-# login_manager.login_view = '/login'
-
-# @login_manager.user_loader
-# def load_user(username):
-#     """This function loads the user by user id. Typically this looks up the user from a user database.
-#     We won't be registering or looking up users in this example, since we'll just login using LDAP server.
-#     So we'll simply return a User object with the passed in username.
-#     """
-#     return User(username)
 
 def serve_layout():
     '''Define the layout of the application'''
@@ -62,7 +49,7 @@ def serve_layout():
             html.Div(
                 id="vertical-navbar-container",  # Vertical navbar container
                 style={
-                    # "display": "block", # no need to define. it fills from the callbacks                   
+                    # "display": "block", # no need to define. it fills from the callbacks
                 },
             ),
             html.Div(
@@ -86,28 +73,41 @@ def serve_layout():
     )
 
 
+# set up the layout
+dash_app.layout = serve_layout  # set the layout to the serve_layout function
+
+# NOTE: It is a bit dirty. But, Flask server needs to have a route explicitly for the starting page (i.e., "/")
+@server.route("/")
+def MyDashApp():
+    return dash_app.index()
+
+
+# set up the callbacks
 @callback(
     Output("vertical-navbar-container", "style"),
     Output("vertical-navbar-container", "children"),
     Input("url", "pathname"),
 )
 def toggle_vertical_navbar(pathname):
-    # Show vertical navbar only for the 'tour_based' page and redirect to '/tour_based/mode_share_race'
-    if pathname.startswith("/tour_based"):
+    if not pathname or pathname == "/":
+        return {"display": "none"}, ""
+    # Show vertical navbar only for the 'tour_based' page
+    elif pathname.startswith("/tour_based"):
         return {
             "display": "block"  # Ensure the navbar is displayed
-        }, navbar_vertical  # Redirect to the desired page
+        }, navbar_vertical
     else:
-        return {"display": "none"}, "" # Hide the vertical navbar on other pages
+        return {"display": "none"}, ""  # Hide the vertical navbar on other pages
 
 
-dash_app.layout = serve_layout   # set the layout to the serve_layout function
-server = dash_app.server         # the server is needed to deploy the application
+server = dash_app.server  # the server is needed to deploy the application
 
 if __name__ == "__main__":
+
     dash_app.run_server(
         host=APP_HOST,
         port=APP_PORT,
         debug=APP_DEBUG,
-        dev_tools_props_check=DEV_TOOLS_PROPS_CHECK
+        dev_tools_props_check=DEV_TOOLS_PROPS_CHECK,
+        use_reloader=USE_RELOADER
     )

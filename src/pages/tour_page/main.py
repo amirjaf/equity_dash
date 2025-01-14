@@ -1,7 +1,8 @@
 # notes
 '''
 NOTE: 
-This page is not in use. The tour_based/race_page loads directly as the first page in the tour-based tab, bypassing a main page
+This page is only available when explicitly search for /tour_based and it redirects to the tour_based/race_page. 
+The tour_based/race_page loads directly as the first page in the tour-based tab, bypassing a main page
 and redirection. 
 '''
 # package imports
@@ -23,19 +24,19 @@ dash.register_page(
 )
 
 # Layout for '/tour_based' with a redirection to '/tour_based/mode_share_race'
-
-layout =  dcc.Location(id='url', refresh=True),  # Ensure refresh=True for the redirection
+layout =  dcc.Location(id='url_main_tour_page', refresh=True),  # Ensure refresh=True for the redirection
 
 
 
 # Callback to handle the redirection from '/tour_based' to '/tour_based/mode_share_race'
 @callback(
-    Output('url', 'href'),  # Change the URL path to trigger the redirect
-    Input('url', 'pathname')  # Listen for the pathname change
+    Output('url_main_tour_page', 'href'),  # Change the URL path to trigger the redirect
+    Input('url_main_tour_page', 'pathname')  # Listen for the pathname change
 )
 def redirect_to_mode_share_race(pathname):
     # If the user accesses '/tour_based', automatically redirect to '/tour_based/mode_share_race'
     if pathname == '/tour_based':
         return '/tour_based/page_race'
     return pathname  # Keep the current path if it's not '/tour_based'
+
 

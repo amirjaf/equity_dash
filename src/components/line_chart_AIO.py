@@ -174,7 +174,6 @@ class LineChartAIO(html.Div):
         self.register_callbacks()
 
     # methods
-    @cache.memoize()
     def data_processing_line_chart(self, filters, var1, var2):
         filters_copy = filters.copy()
         if filters_copy.get('ocounty') == 'all':
@@ -184,7 +183,6 @@ class LineChartAIO(html.Div):
         # Use groupby to group by var1 and aggregate var2 as lists
         return group_to_dict(filtered_df, var1, var2)
 
-    @cache.memoize()
     def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=500):
         kde_dict = {}
         for key, numbers in dict.items():
@@ -196,7 +194,6 @@ class LineChartAIO(html.Div):
             kde_dict[key] = (x_kde, y_kde)
         return kde_dict
 
-    @cache.memoize()
     def create_kde_graph(self, kde_dict, opacity=0.2):
         # Define a high-contrast custom color palette
         color_palette = [
@@ -246,6 +243,7 @@ class LineChartAIO(html.Div):
         # Return the figure wrapped inside a dcc.Graph component
         return dcc.Graph(figure=figure)
 
+    # final function to make the line graph
     @cache.memoize()
     def make_line_graph(self, dict, var1, var2):
         dict = self.data_processing_line_chart(dict, var1, var2)
