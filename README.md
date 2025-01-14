@@ -1,7 +1,3 @@
-# dash-app-structure
-
- The software architecture design is inspired by [this repository.](https://github.com/bradley-erickson/dash-app-structure).
-
 ## Install and Setup
 
 To get started with the app, follow these steps for installation and setup:
@@ -35,14 +31,7 @@ Run the Dash app from the current directory:
 ```
 
 ## Structure
-
-This repository serves as a guide for structuring large Dash applications.
-The ideas presented in this guide come from my own experience working in large React projects and common attributes found in open source repositories.
-
 The following is an overview of the structure.
-I will follow the structure from top down, covering each item and its purpose.
-Additionally, I've created this repository to demonstrate the structure and serve as a template for anyone who wants to fork it.
-Each file in the repository includes more information about the purpose of the file.
 
 ```bash
 dash-app-structure
@@ -95,27 +84,6 @@ dash-app-structure
 
 ```
 
-### Virtual Environment
-
-The first few items in our structure refer to the virtaul environment and package manager.
-This is a must for handling large applications and ensuring that packages are using the correct versions.
-
-The `.venv` directory is the virtual environment itself where the project specific Python package versions are located.
-There are various ways to create this, but use the first command below.
-Note that `.venv` is a common name to use for your virtual environment.
-The `requirements.txt` file contains the required Python packages and their respective versions for running the application.
-I've included some additional commands for installing the current requirements, adding new packages, and updating the requirments file.
-
-```bash
-python -m venv .venv                            # create the virtual environment
-.venv\Scripts\pip install -r requirements.txt   # install all packages
-.venv\Scripts\pip install new_package           # install a new package
-.venv\Scripts\pip freeze > requirements.txt     # update requirements with new packages
-```
-
-Note: there is a small shift in the Python community away from using `venv` and instead using `pipenv`.
-At the time of writing this, I am not as familiar with `pipenv` as and I am with using `venv`.
-
 ### Environment Variables
 
 The `.env.development` file is where you should store sensitive information such as passwords or API keys.  
@@ -126,6 +94,11 @@ You can also substitute this file with another `.env` file, such as `.env.produc
 ```bash
 export ENVIRONMENT_FILE=.env.production
 ```
+
+# Acknowledgment
+
+The software architecture design is inspired by [this repository](https://github.com/bradley-erickson/dash-app-structure).
+
 
 
 
