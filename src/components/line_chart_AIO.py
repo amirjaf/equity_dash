@@ -48,6 +48,11 @@ class LineChartAIO(html.Div):
             'subcomponent': 'scatter_container',
             'aio_id': aio_id
         }
+        table_container = lambda aio_id: {
+            'component': 'LineChartAIO',
+            'subcomponent': 'table_container',
+            'aio_id': aio_id            
+        }
 
     ids = ids
 
@@ -79,7 +84,7 @@ class LineChartAIO(html.Div):
             "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
         }
 
-        # Layout for the dropdowns and line charts container
+    # Fixed layout code
         super().__init__(
             html.Div(
                 [
@@ -154,15 +159,32 @@ class LineChartAIO(html.Div):
                                     ],
                                     style={'margin-bottom': '30px'}
                                 ),
-                                # Pie charts container to hold all pie charts
-                                html.Div(id=self.ids.scatter_container(self.aio_id), children=[], style={'margin-top': '30px'}),
+                                
+                                # Row for Scatter Chart and Table
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            html.Div(
+                                                id=self.ids.scatter_container(self.aio_id),
+                                                children=[],
+                                                style={'margin-top': '30px'}
+                                            ),
+                                            width=9
+                                        ),
+                                        dbc.Col(
+                                            html.Div(
+                                                id=self.ids.table_container(self.aio_id),
+                                                children=[],
+                                                style={'margin-top': '30px'}
+                                            ),
+                                            width=3
+                                        )
+                                    ]
+                                ),
                             ],
                             width=12,
                             style={'height': '100vh', 'padding': '10px'}
-                        ),
-                        justify='center',
-                        align='start',
-                        style={'height': '100vh', 'width': '100%'}
+                        )
                     ),
                     dcc.Store(id=self.ids.store(self.aio_id), data=[])
                 ],
@@ -170,11 +192,13 @@ class LineChartAIO(html.Div):
             )
         )
 
+
         # register the callbacks here
         self.register_callbacks()
 
     # methods
-    def data_processing_line_chart(self, filters, var1, var2):
+    @cache.memoize()
+    def data_processing(self, filters, var1, var2):
         filters_copy = filters.copy()
         if filters_copy.get('ocounty') == 'all':
             filters_copy.pop('ocounty', None)  # remove the filter if it is 'all'
@@ -183,7 +207,7 @@ class LineChartAIO(html.Div):
         # Use groupby to group by var1 and aggregate var2 as lists
         return group_to_dict(filtered_df, var1, var2)
 
-    def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=500):
+    def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=200):
         kde_dict = {}
         for key, numbers in dict.items():
             numbers = numpy.array(numbers)
@@ -239,15 +263,58 @@ class LineChartAIO(html.Div):
                 margin={'l': 60, 'b': 40, 't': 40, 'r': 0}  # Adjust margins for readability
             )
         )
-
         # Return the figure wrapped inside a dcc.Graph component
         return dcc.Graph(figure=figure)
+
+    def create_average_table(self, dict):
+        # Prepare the data for the table
+        data = [
+            html.Tr(
+                [
+                    html.Td(f"{self.row_list[category - 1]}"),
+                    html.Td(f"{numpy.mean(dict[category]):.2f} {self.unit}")
+                ]
+            )
+            for category in dict
+        ]
+
+        # Create the table
+        table = dbc.Table(
+            [
+                # Table Header
+                html.Thead(
+                    html.Tr(
+                        [
+                            html.Th("Category"),
+                            html.Th(f"Average {self.kind} {self.unit}")
+                        ]
+                    )
+                ),
+                # Table Body
+                html.Tbody(data)
+            ],
+            bordered=True,  # Add borders to the table
+            hover=True,     # Add hover effect
+            responsive=True,  # Make the table responsive
+            striped=True,   # Add striped rows for better readability
+            style={'margin-top': '0px'}  # Add space above the table
+        )
+
+        # Return the table wrapped in a Div for layout purposes
+        return html.Div(table, style={'width': '100%'})
+
+
 
     # final function to make the line graph
     @cache.memoize()
     def make_line_graph(self, dict, var1, var2):
-        dict = self.data_processing_line_chart(dict, var1, var2)
+        dict = self.data_processing(dict, var1, var2)
         return self.create_kde_graph(self.creat_kde_xy(dict))
+
+    @cache.memoize()
+    def make_table(self, dict, var1, var2):
+        dict = self.data_processing(dict, var1, var2)
+        return self.create_average_table(dict)
 
     def register_callbacks(self):
         @callback(
@@ -264,11 +331,13 @@ class LineChartAIO(html.Div):
                 'column_name': self.column_name
             }
             self.make_line_graph(state_data['filters'], state_data['row_name'], state_data['column_name'])
+            self.make_table(state_data['filters'], state_data['row_name'], state_data['column_name'])
             return state_data
 
         @callback(
             Output(self.ids.scatter_container(self.aio_id), 'children'),
+            Output(self.ids.table_container(self.aio_id), 'children'),
             Input(self.ids.store(self.aio_id), 'data')
         )
         def update_graph(data):
-            return self.make_line_graph(data['filters'], data['row_name'], data['column_name'])
+            return self.make_line_graph(data['filters'], data['row_name'], data['column_name']), self.make_table(data['filters'], data['row_name'], data['column_name'])
