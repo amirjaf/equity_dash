@@ -48,6 +48,9 @@ layout = dbc.Container(
                     column_name='tautodist',
                     row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Distance',
+                    input_custom_name='Race',
+                    input_custom_column_name='RACE',
+                    input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
                     aio_id='inc_distance_distribution'
                 ),
                 width=12  # Full width for all screen sizes
@@ -63,6 +66,9 @@ layout = dbc.Container(
                     row_name='lowinc',
                     column_name='ttravtime',
                     row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    input_custom_name='Race',
+                    input_custom_column_name='RACE',
+                    input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
                     kind='Duration',
                     aio_id='inc_travel_time_distribution'
                 ),

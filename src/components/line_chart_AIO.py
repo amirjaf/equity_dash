@@ -43,6 +43,11 @@ class LineChartAIO(html.Div):
             'subcomponent': 'input_mode',
             'aio_id': aio_id
         }
+        input_custom = lambda aio_id: {
+            'component': 'LineChartAIO',
+            'subcomponent': 'input_custom',
+            'aio_id': aio_id
+        }
         scatter_container = lambda aio_id: {
             'component': 'LineChartAIO',
             'subcomponent': 'scatter_container',
@@ -56,7 +61,7 @@ class LineChartAIO(html.Div):
 
     ids = ids
 
-    def __init__(self, df, row_name, column_name, row_list, kind='Distance', aio_id=None):
+    def __init__(self, df, row_name, column_name, row_list, input_custom_name, input_custom_column_name, input_custom_list, kind='Distance', aio_id=None):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
@@ -65,6 +70,9 @@ class LineChartAIO(html.Div):
         self.row_name = row_name
         self.column_name = column_name
         self.row_list = row_list
+        self.input_custom_name = input_custom_name # custom dropdown name
+        self.input_custom_list = input_custom_list # custom drop down options
+        self.input_custom_column = input_custom_column_name # the name of the column to filter on in the file
         self.kind = kind
         # unit mapping
         unit_mapping = {
@@ -157,8 +165,26 @@ class LineChartAIO(html.Div):
                                             width=6,
                                         ),
                                     ],
-                                    style={'margin-bottom': '30px'}
+                                    style={'margin-bottom': '15px'}
                                 ),
+                                dbc.Row(
+                                    [
+                                        dbc.Col(html.Label(f"Select {self.input_custom_name}:", style={'font-weight': 'bold'}), width=12),
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id=self.ids.input_custom(self.aio_id),
+                                                options= [
+                                                    {'label': f"All {self.input_custom_name}", 'value': 'all'},
+                                                    *({'label': name, 'value': idx + 1} for idx, name in enumerate(self.input_custom_list))
+                                                ],
+                                                placeholder=f"Choose {self.input_custom_name}",
+                                                value='all'
+                                            ),
+                                            width=6,
+                                        ),
+                                    ],
+                                    style={'margin-bottom': '30px'}
+                                ),  
                                 
                                 # Row for Scatter Chart and Table
                                 dbc.Row(
@@ -199,12 +225,10 @@ class LineChartAIO(html.Div):
     # methods
     @cache.memoize()
     def data_processing(self, filters, var1, var2):
-        filters_copy = filters.copy()
-        if filters_copy.get('ocounty') == 'all':
-            filters_copy.pop('ocounty', None)  # remove the filter if it is 'all'
+        filters_copy = {
+            key: value for key, value in filters.items() if value != 'all'
+        }  # Remove all 'all' keys to not filter on them        
         filtered_df = filter_df(self.df, filters_copy)[[var1, var2]]
-
-        # Use groupby to group by var1 and aggregate var2 as lists
         return group_to_dict(filtered_df, var1, var2)
 
     def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=200):
@@ -319,14 +343,15 @@ class LineChartAIO(html.Div):
     def register_callbacks(self):
         @callback(
             Output(self.ids.store(self.aio_id), 'data'),
-            State(self.ids.input_purpose(self.aio_id), 'value'),
+            Input(self.ids.input_purpose(self.aio_id), 'value'),
             Input(self.ids.input_mode(self.aio_id), 'value'),
-            Input(self.ids.input_county(self.aio_id), 'value')
+            Input(self.ids.input_county(self.aio_id), 'value'),
+            Input(self.ids.input_custom(self.aio_id), 'value')
         )
-        def compute_value(purp, mode, ocounty):
+        def compute_value(purp, mode, ocounty, custom):
             # Prepare the state data structure
             state_data = {
-                'filters': {'pdpurp2': purp, 'tourmode2': mode, 'ocounty': ocounty},
+                'filters': {'pdpurp2': purp, 'tourmode2': mode, 'ocounty': ocounty, self.input_custom_column: custom},
                 'row_name': self.row_name,
                 'column_name': self.column_name
             }
@@ -340,4 +365,7 @@ class LineChartAIO(html.Div):
             Input(self.ids.store(self.aio_id), 'data')
         )
         def update_graph(data):
-            return self.make_line_graph(data['filters'], data['row_name'], data['column_name']), self.make_table(data['filters'], data['row_name'], data['column_name'])
+            return (
+                self.make_line_graph(data['filters'], data['row_name'], data['column_name']), 
+                self.make_table(data['filters'], data['row_name'], data['column_name'])
+            )

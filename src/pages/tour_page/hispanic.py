@@ -47,6 +47,9 @@ layout = dbc.Container(
                     row_name='HISP_B',
                     column_name='tautodist',
                     row_list=['Non-hispanic', 'Hispanic'],
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Distance',
                     aio_id='hisp_distance_distribution'
                 ),
@@ -63,6 +66,9 @@ layout = dbc.Container(
                     row_name='HISP_B',
                     column_name='ttravtime',
                     row_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Duration',
                     aio_id='hisp_travel_time_distribution'
                 ),
