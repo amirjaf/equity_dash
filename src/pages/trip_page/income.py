@@ -9,12 +9,12 @@ from components.line_chart_AIO import LineChartAIO
 dash.register_page(
 
     __name__,
-    path='/tour_based/page_income',
+    path='/trip_based/page_income',
     title='Income Analysis'
 )
 
 # load the processed tour file
-from .load_tour_data import tour_df
+from .load_trip_data import tour_df
 
 
 # Layout
@@ -32,7 +32,7 @@ layout = dbc.Container(
                     input_custom_name='Race',
                     input_custom_column_name='RACE',
                     input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
-                    aio_id='inc_mode_share_tour'
+                    aio_id='inc_mode_share_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -51,7 +51,7 @@ layout = dbc.Container(
                     input_custom_name='Race',
                     input_custom_column_name='RACE',
                     input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
-                    aio_id='inc_distance_distribution_tour'
+                    aio_id='inc_distance_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -70,7 +70,7 @@ layout = dbc.Container(
                     input_custom_column_name='RACE',
                     input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
                     kind='Duration',
-                    aio_id='inc_travel_time_distribution_tour'
+                    aio_id='inc_travel_time_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),

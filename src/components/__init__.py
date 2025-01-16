@@ -1,4 +1,5 @@
 # pull in components from files in the current directory to make imports cleaner
 from .navbar import navbar
 from .footer import footer
-from .navbar_vertical import navbar_vertical
+from .navbar_vertical_tour_page import navbar_vertical_tour_page
+from .navbar_vertical_trip_page import navbar_vertical_trip_page

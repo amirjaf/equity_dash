@@ -9,12 +9,12 @@ from components.line_chart_AIO import LineChartAIO
 dash.register_page(
 
     __name__,
-    path='/tour_based/page_income',
-    title='Income Analysis'
+    path='/trip_based/page_hispanic',
+    title='Hispanic Analysis'
 )
 
 # load the processed tour file
-from .load_tour_data import tour_df
+from .load_trip_data import tour_df
 
 
 # Layout
@@ -25,14 +25,14 @@ layout = dbc.Container(
             dbc.Col(
                 PieChartAIO(
                     tour_df,
-                    row_name='lowinc',
+                    row_name='HISP_B',
                     column_name='tourmode',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    row_list=['Non-hispanic', 'Hispanic'],
                     column_list=['SOV', 'HOV2', 'HOV3+', 'Drive To Transit', 'Walk To Transit', 'Bike', 'School Bus'],
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
-                    aio_id='inc_mode_share_tour'
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    aio_id='hisp_mode_share_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -44,14 +44,14 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     tour_df,
-                    row_name='lowinc',
+                    row_name='HISP_B',
                     column_name='tautodist',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    row_list=['Non-hispanic', 'Hispanic'],
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Distance',
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
-                    aio_id='inc_distance_distribution_tour'
+                    aio_id='hisp_distance_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -63,14 +63,14 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     tour_df,
-                    row_name='lowinc',
+                    row_name='HISP_B',
                     column_name='ttravtime',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
+                    row_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Duration',
-                    aio_id='inc_travel_time_distribution_tour'
+                    aio_id='hisp_travel_time_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -79,3 +79,5 @@ layout = dbc.Container(
     ],
     fluid=True
 )
+
+

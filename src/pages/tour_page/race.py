@@ -30,7 +30,7 @@ layout = dbc.Container(
                     input_custom_name='Income Level',
                     input_custom_column_name='lowinc',
                     input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
-                    aio_id='race_mode_share'
+                    aio_id='race_mode_share_tour'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -49,7 +49,7 @@ layout = dbc.Container(
                     input_custom_column_name='lowinc',
                     input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Distance',
-                    aio_id='race_distance_distribution'
+                    aio_id='race_distance_distribution_tour'
                 ),
                 width=12  # Full width for all screen sizes
             ),
@@ -68,7 +68,7 @@ layout = dbc.Container(
                     input_custom_column_name='lowinc',
                     input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     kind='Duration',
-                    aio_id='race_travel_time_distribution'
+                    aio_id='race_travel_time_distribution_tour'
                 ),
                 width=12  # Full width for all screen sizes
             ),

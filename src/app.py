@@ -15,7 +15,7 @@ from dash import Input, Output, callback
 
 # local imports
 from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK, USE_RELOADER
-from components import navbar, footer, navbar_vertical
+from components import navbar, footer, navbar_vertical_tour_page, navbar_vertical_trip_page
 
 from server import server
 
@@ -94,7 +94,11 @@ def toggle_vertical_navbar(pathname):
     elif pathname.startswith("/tour_based"):
         return {
             "display": "block"  # Ensure the navbar is displayed
-        }, navbar_vertical
+        }, navbar_vertical_tour_page
+    elif pathname.startswith("/trip_based"):
+        return {
+            "display": "block"  # Ensure the navbar is displayed
+        }, navbar_vertical_trip_page
     else:
         return {"display": "none"}, ""  # Hide the vertical navbar on other pages
 

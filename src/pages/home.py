@@ -50,8 +50,22 @@ layout = html.Div(
         html.Div(
             [
                 html.A(
-                    "Checkout the tour based equity analysis here.",
+                    "Checkout the tour based equity analysis here",
                     href="/tour_based/page_race",
+                    style={
+                        "text-decoration": "none",
+                        "color": "#ff5722",
+                        "font-size": "18px",
+                    }
+                )
+            ],
+            style={"margin-bottom": "20px"}
+        ),
+        html.Div(
+            [
+                html.A(
+                    "Checkout the trip based equity analysis here",
+                    href="/trip_based/page_race",
                     style={
                         "text-decoration": "none",
                         "color": "#ff5722",

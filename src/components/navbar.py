@@ -40,6 +40,9 @@ navbar = dbc.Navbar(
                         dbc.NavItem(
                             dbc.NavLink("Tour Based", href="/tour_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "white"}, id="nav-tour-based", active=False)
                         ), # refrence to the first tab of the 'tour based' page
+                        dbc.NavItem(
+                            dbc.NavLink("Trip Based", href="/trip_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "white"}, id="nav-trip-based", active=False)
+                        ), # refrence to the first tab of the 'tour based' page
                     ],
                     pills=True,
                 ),
@@ -61,15 +64,18 @@ navbar = dbc.Navbar(
     [
         Output('nav-home', 'active'),
         Output('nav-tour-based', 'active'),
+        Output('nav-trip-based', 'active'),
     ],
     Input('url', 'pathname')
 )
 def set_active_link(pathname):
-    # Match partial paths to set the active state
+    # This allows the active state to be set for all pages under a specific path
     if pathname.startswith('/tour_based'):
-        return False, True
+        return False, True, False
+    elif pathname.startswith('/trip_based'):
+        return False, False, True
     else:  # Default to Home
-        return True, False
+        return True, False, False
 
 # Callback for toggling the collapse on small screens
 @callback(

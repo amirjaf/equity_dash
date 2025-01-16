@@ -158,8 +158,9 @@ class PieChartAIO(html.Div):
                     ),
                     dcc.Store(id=self.ids.store(self.aio_id), data=[])
                 ],
-                style=component_style
-            )
+                style=component_style,
+                className="container-fluid",
+            ), 
         )
 
         # register the callbacks here
@@ -169,12 +170,26 @@ class PieChartAIO(html.Div):
     def pie_charts_grid(self, pie_chart_list):
         return dbc.Row(
             [
-                dbc.Col(pie_chart, width=6)  # Adjust width based on how many pie charts you want in each row
+                dbc.Col(
+                    html.Div(
+                        pie_chart,
+                        style={
+                            "padding": "10px",  # Add padding inside the container
+                            "border": "1px solid #ddd",  # Add a border to the container
+                            "border-radius": "8px",  # Optional: rounded corners
+                            "background-color": "#f9f9f9",  # Optional: background color
+                            "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)",  # Add shadow for better appearance
+                        },
+                    ),
+                    width=6,  # Adjust width for each column
+                )
                 for pie_chart in pie_chart_list
             ],
-            justify="left",  # Center the pie charts in the row
-            align="start"
+            justify="left",  # Align pie charts to the left
+            align="start",
+            className="g-4"
         )
+
 
     def create_pie_charts(self, table):
         pie_charts = []
@@ -221,7 +236,7 @@ class PieChartAIO(html.Div):
                 y=-0.1,
                 yanchor="top"
             ),
-            margin=dict(t=40, b=40, l=0, r=40)  # Adjust the margin to prevent title overlap
+            margin=dict(t=40, b=40, l=0, r=40),  # Adjust the margin to prevent title overlap
         )
 
         return pie_chart
