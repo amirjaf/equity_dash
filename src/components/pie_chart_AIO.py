@@ -37,6 +37,11 @@ class PieChartAIO(html.Div):
             'subcomponent': 'input_county',
             'aio_id': aio_id
         }
+        input_custom = lambda aio_id: {
+            'component': 'PieChartAIO',
+            'subcomponent': 'input_custom',
+            'aio_id': aio_id
+        }
         pie_container = lambda aio_id: {
             'component': 'PieChartAIO',
             'subcomponent': 'pie_container',
@@ -45,7 +50,7 @@ class PieChartAIO(html.Div):
 
     ids = ids
 
-    def __init__(self, df, row_name, column_name, row_list, column_list, aio_id=None):
+    def __init__(self, df, row_name, column_name, row_list, column_list, input_custom_name, input_custom_column_name, input_custom_list, aio_id=None):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
@@ -55,6 +60,9 @@ class PieChartAIO(html.Div):
         self.column_name = column_name
         self.row_list = row_list
         self.column_list = column_list
+        self.input_custom_name = input_custom_name # custom dropdown name
+        self.input_custom_list = input_custom_list # custom drop down options
+        self.input_custom_column = input_custom_column_name
 
         # Style dictionary
         component_style = {
@@ -118,8 +126,26 @@ class PieChartAIO(html.Div):
                                             width=6,
                                         ),
                                     ],
-                                    style={'margin-bottom': '30px'}
+                                    style={'margin-bottom': '15px'}
                                 ),
+                                dbc.Row(
+                                    [
+                                        dbc.Col(html.Label(f"Select {self.input_custom_name}:", style={'font-weight': 'bold'}), width=12),
+                                        dbc.Col(
+                                            dcc.Dropdown(
+                                                id=self.ids.input_custom(self.aio_id),
+                                                options= [
+                                                    {'label': f"All {self.input_custom_name}", 'value': 'all'},
+                                                    *({'label': name, 'value': idx + 1} for idx, name in enumerate(self.input_custom_list))
+                                                ],
+                                                placeholder=f"Choose {self.input_custom_name}",
+                                                value='all'
+                                            ),
+                                            width=6,
+                                        ),
+                                    ],
+                                    style={'margin-bottom': '30px'}
+                                ),                                
                                 # Pie charts container to hold all pie charts
                                 html.Div(id=self.ids.pie_container(self.aio_id), children=[], style={'margin-top': '30px'}),
                             ],
@@ -201,11 +227,11 @@ class PieChartAIO(html.Div):
         return pie_chart
 
     @cache.memoize()
-    def global_store(self, dict, var1, var2):
-        if dict['ocounty'] == 'all':
-            table = cross_tab(self.df, var1, var2)
-        else:
-            table = cross_tab(filter_df(self.df, dict), var1, var2)
+    def global_store(self, filters, var1, var2):
+        filters_copy = {
+            key: value for key, value in filters.items() if value != 'all'
+        }  # Remove all 'all' keys to not filter on them        
+        table = cross_tab(filter_df(self.df, filters_copy), var1, var2)
         return table
 
     @cache.memoize()
@@ -217,17 +243,18 @@ class PieChartAIO(html.Div):
     def register_callbacks(self):
         @callback(
             Output(self.ids.store(self.aio_id), 'data'),
-            State(self.ids.input_purpose(self.aio_id), 'value'),
-            Input(self.ids.input_county(self.aio_id), 'value')
+            Input(self.ids.input_purpose(self.aio_id), 'value'),
+            Input(self.ids.input_county(self.aio_id), 'value'),
+            Input(self.ids.input_custom(self.aio_id), 'value')
         )
-        def compute_value(purp, ocounty):
+        def compute_value(purp, ocounty, custom):
             # Prepare the state data structure
             state_data = {
-                'filters': {'pdpurp2': purp, 'ocounty': ocounty},
+                'filters': {'pdpurp2': purp, 'ocounty': ocounty, self.input_custom_column: custom},
                 'row_name': self.row_name,
                 'column_name': self.column_name
             }
-            self.global_store(state_data['filters'], state_data['row_name'], state_data['column_name'])
+            self.make_pie_charts(state_data)
             return state_data
 
         @callback(

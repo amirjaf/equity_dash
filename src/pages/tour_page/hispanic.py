@@ -29,6 +29,9 @@ layout = dbc.Container(
                     column_name='tourmode',
                     row_list=['Non-hispanic', 'Hispanic'],
                     column_list=['SOV', 'HOV2', 'HOV3+', 'Drive To Transit', 'Walk To Transit', 'Bike', 'School Bus'],
+                    input_custom_name='Income Level',
+                    input_custom_column_name='lowinc',
+                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     aio_id='hisp_mode_share'
                 ),
                 width=12  # Full width for all screen sizes
