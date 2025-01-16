@@ -1,6 +1,6 @@
 # Notes
 """
-This AIO creates a line chart card with two dropdowns for travel purpose, tour mode type (auto, transit, active), and origin county as filters
+This AIO creates a line chart card with two dropdowns for travel purpose, tour mode type (auto, transit, active), origin county, and a custom dropdown  as filters
 based on two different variables for pivoting.
 I did not use MATCH, created a class for making unique ids for each instance.
 

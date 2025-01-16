@@ -1,6 +1,6 @@
 # notes
 '''
-This AIO creates pie charts card with two dropdowns for travel purpose and origin county as filters
+This AIO creates pie charts card with two dropdowns for travel purpose, origin county, and a custom dropdown as filters
 based on two different variables for pivoting.
 I did not use MATCH, created a class for making uniqe ids for each instance.
 
@@ -62,7 +62,7 @@ class PieChartAIO(html.Div):
         self.column_list = column_list
         self.input_custom_name = input_custom_name # custom dropdown name
         self.input_custom_list = input_custom_list # custom drop down options
-        self.input_custom_column = input_custom_column_name
+        self.input_custom_column = input_custom_column_name # the name of the column to filter on in the file
 
         # Style dictionary
         component_style = {
