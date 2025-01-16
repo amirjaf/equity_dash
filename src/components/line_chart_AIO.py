@@ -214,7 +214,8 @@ class LineChartAIO(html.Div):
                     ),
                     dcc.Store(id=self.ids.store(self.aio_id), data=[])
                 ],
-                style=component_style
+                style=component_style,
+                className="container-fluid",
             )
         )
 
