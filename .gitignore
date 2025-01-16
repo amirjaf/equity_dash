@@ -146,6 +146,7 @@ cython_debug/
 
 # CSV files
 src/assets/data/*.csv
+src/assets/data/*.pkl
 
 # remove cache files
 cache/
