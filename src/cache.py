@@ -14,6 +14,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)  # make if didn't exist
 CACHE_CONFIG = {
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': CACHE_DIR,
+    #'CACHE_DEFAULT_TIMEOUT': 300, 
 }
 cache = Cache()
 cache.init_app(server, config=CACHE_CONFIG)
