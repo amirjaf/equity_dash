@@ -19,6 +19,7 @@ from components import navbar, footer, navbar_vertical_tour_page, navbar_vertica
 
 from server import server
 
+# Initialize Dash app
 dash_app = dash.Dash(
     __name__,
     server=server,
@@ -27,8 +28,8 @@ dash_app = dash.Dash(
         dbc.themes.BOOTSTRAP,
         dbc.icons.FONT_AWESOME
     ],  # fetch the proper css items we want
-    meta_tags=[
-        {  # check if device is a mobile device. This is a must if you do any mobile styling
+    meta_tags=[  # check if device is a mobile device. This is a must if you do any mobile styling
+        {
             'name': 'viewport',
             'content': 'width=device-width, initial-scale=1'
         }
@@ -45,9 +46,9 @@ def serve_layout():
         [
             dcc.Location(id="url", refresh=False),  # Tracks the current URL
             navbar,  # Horizontal navbar visible on all pages
-            # Vertical navbar container. We need one container for each page. 
+            # Vertical navbar container. We need one container for each page.
             html.Div(
-                id="vertical-navbar-container_1", # Vertical navbar container
+                id="vertical-navbar-container_1",  # Vertical navbar container
             ),
             html.Div(
                 id="vertical-navbar-container_2",  # Vertical navbar container
@@ -94,17 +95,13 @@ def toggle_vertical_navbar(pathname):
     Toggle the vertical navbar based on the URL
     '''
     if pathname.startswith("/tour_based"):
-        print("Tour-based page detected.")
-        return navbar_vertical_tour_page,{'display':'block'}, "",{'display':'none'}
+        return navbar_vertical_tour_page, {'display': 'block'}, "", {'display': 'none'}
 
     elif pathname.startswith("/trip_based"):
-        print("Trip-based page detected.")
-        return "",{'display':'none'}, navbar_vertical_trip_page,{'display':'block'}
-
+        return "", {'display': 'none'}, navbar_vertical_trip_page, {'display': 'block'}
+    
     else:
-        print("Page not recognized. Hiding navbar.")
-        return "",{},"",{}
-
+        return "", {}, "", {}
 
 
 server = dash_app.server  # the server is needed to deploy the application
