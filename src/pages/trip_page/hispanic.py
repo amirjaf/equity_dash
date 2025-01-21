@@ -14,7 +14,7 @@ dash.register_page(
 )
 
 # load the processed tour file
-from .load_trip_data import tour_df
+from .load_trip_data import trip_df
 
 
 # Layout
@@ -24,11 +24,11 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 PieChartAIO(
-                    tour_df,
+                    trip_df,
                     row_name='HISP_B',
                     column_name='tourmode',
                     row_list=['Non-hispanic', 'Hispanic'],
-                    column_list=['SOV', 'HOV2', 'HOV3+', 'Drive To Transit', 'Walk To Transit', 'Bike', 'School Bus'],
+                    column_list=['SOV', 'HOV2', 'HOV3+', 'Transit', 'Bike', 'Walk', 'School Bus'],
                     input_custom_name='Income Level',
                     input_custom_column_name='lowinc',
                     input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
@@ -43,9 +43,9 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    tour_df,
+                    trip_df,
                     row_name='HISP_B',
-                    column_name='tautodist',
+                    column_name='travdist',
                     row_list=['Non-hispanic', 'Hispanic'],
                     input_custom_name='Income Level',
                     input_custom_column_name='lowinc',
@@ -62,7 +62,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    tour_df,
+                    trip_df,
                     row_name='HISP_B',
                     column_name='ttravtime',
                     row_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],

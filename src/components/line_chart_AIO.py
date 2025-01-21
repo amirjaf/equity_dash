@@ -224,7 +224,6 @@ class LineChartAIO(html.Div):
         self.register_callbacks()
 
     # methods
-    @cache.memoize()
     def data_processing(self, filters, var1, var2):
         filters_copy = {
             key: value for key, value in filters.items() if value != 'all'

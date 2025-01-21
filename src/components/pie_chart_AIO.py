@@ -241,7 +241,6 @@ class PieChartAIO(html.Div):
 
         return pie_chart
 
-    @cache.memoize()
     def global_store(self, filters, var1, var2):
         filters_copy = {
             key: value for key, value in filters.items() if value != 'all'
