@@ -45,11 +45,12 @@ def serve_layout():
         [
             dcc.Location(id="url", refresh=False),  # Tracks the current URL
             navbar,  # Horizontal navbar visible on all pages
+            # Vertical navbar container. We need one container for each page. 
             html.Div(
-                id="vertical-navbar-container",  # Vertical navbar container
-                style={
-                    # "display": "block", # no need to define. it fills from the callbacks
-                },
+                id="vertical-navbar-container_1", # Vertical navbar container
+            ),
+            html.Div(
+                id="vertical-navbar-container_2",  # Vertical navbar container
             ),
             html.Div(
                 dash.page_container,  # Page-specific content managed by Dash
@@ -81,26 +82,29 @@ def MyDashApp():
     return dash_app.index()
 
 
-# set up the callbacks
 @callback(
-    Output("vertical-navbar-container", "style"),
-    Output("vertical-navbar-container", "children"),
+    Output("vertical-navbar-container_1", "children"),
+    Output("vertical-navbar-container_1", "style"),
+    Output("vertical-navbar-container_2", "children"),
+    Output("vertical-navbar-container_2", "style"),
     Input("url", "pathname"),
 )
 def toggle_vertical_navbar(pathname):
-    if not pathname or pathname == "/":
-        return {"display": "none"}, ""
-    # Show vertical navbar only for the 'tour_based' page
-    elif pathname.startswith("/tour_based"):
-        return {
-            "display": "block"  # Ensure the navbar is displayed
-        }, navbar_vertical_tour_page
+    '''
+    Toggle the vertical navbar based on the URL
+    '''
+    if pathname.startswith("/tour_based"):
+        print("Tour-based page detected.")
+        return navbar_vertical_tour_page,{'display':'block'}, "",{'display':'none'}
+
     elif pathname.startswith("/trip_based"):
-        return {
-            "display": "block"  # Ensure the navbar is displayed
-        }, navbar_vertical_trip_page
+        print("Trip-based page detected.")
+        return "",{'display':'none'}, navbar_vertical_trip_page,{'display':'block'}
+
     else:
-        return {"display": "none"}, ""  # Hide the vertical navbar on other pages
+        print("Page not recognized. Hiding navbar.")
+        return "",{},"",{}
+
 
 
 server = dash_app.server  # the server is needed to deploy the application
