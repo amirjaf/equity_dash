@@ -65,7 +65,7 @@ class PieChartAIO(html.Div):
         self.input_custom_column = input_custom_column_name # the name of the column to filter on in the file
 
         # Style dictionary
-        component_style = {
+        self.component_style = {
             "font-family": "Arial, sans-serif",
             "margin": "20px",
             "padding": "20px",
@@ -73,6 +73,20 @@ class PieChartAIO(html.Div):
             "border-radius": "8px",
             "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
         }
+
+        # Color palette for the pie charts. Up to 12 categories. Modify if needed.
+        self.color_palette = [
+            'rgba(31, 119, 180, 1)',  # Blue
+            'rgba(255, 127, 14, 1)',  # Orange
+            'rgba(44, 160, 44, 1)',   # Green
+            'rgba(214, 39, 40, 1)',   # Red
+            'rgba(148, 103, 189, 1)', # Purple
+            'rgba(140, 86, 75, 1)',   # Brown
+            'rgba(227, 119, 194, 1)', # Pink
+            'rgba(127, 127, 127, 1)', # Gray
+            'rgba(188, 189, 34, 1)',  # Olive
+            'rgba(23, 190, 207, 1)'   # Cyan
+        ]
 
         # Layout for the dropdowns and pie charts container
         super().__init__(
@@ -158,7 +172,7 @@ class PieChartAIO(html.Div):
                     ),
                     dcc.Store(id=self.ids.store(self.aio_id), data=[])
                 ],
-                style=component_style,
+                style=self.component_style,
                 className="container-fluid",
             ), 
         )
@@ -205,6 +219,7 @@ class PieChartAIO(html.Div):
         # Prepare data for the pie chart
         row_data = row.values  # Extract the values from the row
 
+        colors = self.color_palette[:len(self.column_list)] 
         # Create the Pie chart inside a Figure
         pie_chart = go.Figure(
             data=[go.Pie(
@@ -214,7 +229,8 @@ class PieChartAIO(html.Div):
                 showlegend=False,  # Show the legend
                 insidetextorientation='horizontal',
                 legendgroup='mode',
-                hole=0.3  # Optional: create a donut chart
+                hole=0.3,  # Optional: create a donut chart
+                marker=dict(colors=colors)
             )]
         )
 
