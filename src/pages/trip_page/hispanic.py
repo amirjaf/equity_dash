@@ -65,7 +65,7 @@ layout = dbc.Container(
                     trip_df,
                     row_name='HISP_B',
                     column_name='ttravtime',
-                    row_list=['White Race', 'Black Race', 'Asian Race', 'Others Race'],
+                    row_list=['White Race', 'African American Race', 'Asian Race', 'Others Race'],
                     input_custom_name='Income Level',
                     input_custom_column_name='lowinc',
                     input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
