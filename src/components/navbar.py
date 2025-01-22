@@ -10,7 +10,7 @@ from dash import html, callback, Output, Input, dcc, State
 import dash_bootstrap_components as dbc
 
 # local imports
-from utils.images import logo_encoded
+from utils.images import logo_encoded, logo_encoded_equity_dash
 
 # Navbar component
 navbar = dbc.Navbar(
@@ -30,6 +30,22 @@ navbar = dbc.Navbar(
                     "marginRight": "20px"
                 },
             ),
+            html.A(
+                dbc.Row(
+                    [
+                        dbc.Col(html.Img(src=logo_encoded_equity_dash, height="160px")),
+                    ],
+                    align="center",
+                    className="g-0",
+                ),
+                href="/",
+                style={
+                    "textDecoration": "none",
+                    "marginRight": "20px"
+                },
+            ),
+            
+
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
             dbc.Collapse(
                 dbc.Nav(
