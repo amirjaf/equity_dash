@@ -242,7 +242,7 @@ class LineChartAIO(html.Div):
             kde_dict[key] = (x_kde, y_kde)
         return kde_dict
 
-    def create_kde_graph(self, kde_dict, opacity=0.2):
+    def create_kde_graph(self, kde_dict, opacity=0.5):
         # Define a high-contrast custom color palette
         color_palette = [
             'rgba(31, 119, 180, {opacity})',  # Blue
