@@ -99,8 +99,8 @@ class LineChartAIO(html.Div):
                     dbc.Row(
                         dbc.Col(
                             [
-                                html.H1(f"Tour {self.kind} Distribution", style={'text-align': 'left'}),
-                                html.P(f"Tour {self.kind} is the {self.kind.lower()} between home and the primary destination.", style={'text-align': 'left'}),
+                                html.H1(f"Travel {self.kind} Distribution", style={'text-align': 'left'}),
+                                html.P(f"{self.kind} is the {self.kind.lower()} between home and the primary destination.", style={'text-align': 'left'}),
 
                                 # Group the dropdowns together with titles
                                 dbc.Row(
