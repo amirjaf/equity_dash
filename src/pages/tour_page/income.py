@@ -16,7 +16,69 @@ dash.register_page(
 # load the processed tour file
 from .load_tour_data import tour_df
 
+dropdowns_pie_charts = {
+    'pdpurp2': {
+        'label': 'Primary Purpose',
+        'options': [
+            {'label': 'Work', 'value': 1},
+            {'label': 'School', 'value': 2},
+            {'label': 'Others', 'value': 3},
+        ]
 
+    },
+    'ocounty': {
+        'label': 'Origin County',
+        'options': [
+
+            {'label': 'All Counties', 'value': 'all'},
+            {'label': 'Bucks', 'value': 1},
+            {'label': 'Chester', 'value': 2},
+            {'label': 'Delaware', 'value': 3},
+            {'label': 'Montgomery', 'value': 4},
+            {'label': 'Philadelphia', 'value': 5},
+            {'label': 'Burlington', 'value': 6},
+            {'label': 'Camden', 'value': 7},
+            {'label': 'Gloucester', 'value': 8},
+        ]
+
+    },
+    'RACE': {
+        'label': 'Race',
+        'options': [
+
+            {'label': 'All Race', 'value': 'all'},
+            {'label': 'White Race', 'value': 1},
+            {'label': 'African American Race', 'value': 2},
+            {'label': 'Asian Race', 'value': 3},
+            {'label': 'Others Race', 'value': 4},
+        ]
+
+    }
+}
+
+pivots_pie_charts = {
+    'index': {
+        'attribute': 'lowinc',
+        'labels': {  
+            1: 'Above 2x Poverty Line',
+            2: 'Above Poverty Line',
+            3: 'Below Poverty Line',
+        }
+    },
+    'column': {
+        'attribute': 'tourmode',
+        'labels': {  
+            1: 'SOV',
+            2: 'HOV2',
+            3: 'HOV3+',
+            4: 'Drive To Transit',
+            5: 'Walk To Transit',
+            6: 'Bike',
+            7: 'Walk',
+            8: 'School Bus',
+        }
+    }
+}
 # Layout
 layout = dbc.Container(
     [
@@ -29,9 +91,9 @@ layout = dbc.Container(
                     column_name='tourmode',
                     row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
                     column_list=['SOV', 'HOV2', 'HOV3+', 'Drive To Transit', 'Walk To Transit', 'Bike', 'Walk', 'School Bus'],
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'African American Race', 'Asian Race', 'Others Race'],
+                    dropdowns=dropdowns_pie_charts,
+                    pivot_elements=pivots_pie_charts, # pivot table index and columns
+                    activity_type='Tour', # default is Travel
                     aio_id='inc_mode_share_tour'
                 ),
                 width=12  # Full width for all screen sizes
