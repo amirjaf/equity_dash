@@ -23,56 +23,28 @@ from cache import cache
 class LineChartAIO(html.Div):
 
     class ids:
-        store = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'store',
-            'aio_id': aio_id
-        }
-        input_purpose = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'input_purpose',
-            'aio_id': aio_id
-        }
-        input_county = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'input_county',
-            'aio_id': aio_id
-        }
-        input_mode = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'input_mode',
-            'aio_id': aio_id
-        }
-        input_custom = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'input_custom',
-            'aio_id': aio_id
-        }
-        scatter_container = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'scatter_container',
-            'aio_id': aio_id
-        }
-        table_container = lambda aio_id: {
-            'component': 'LineChartAIO',
-            'subcomponent': 'table_container',
-            'aio_id': aio_id            
-        }
+        def __init__(self, parent_class_name):
+            self.parent_class_name = parent_class_name
 
-    ids = ids
+        def generate(self, subcomponent, aio_id):
+            return {
+                'component': self.parent_class_name,
+                'subcomponent': subcomponent,
+                'aio_id': aio_id
+            }
 
-    def __init__(self, df, row_name, column_name, row_list, input_custom_name, input_custom_column_name, input_custom_list, kind='Distance', aio_id=None):
+    def __init__(self, df, dropdowns, pivot_elements, kind='Distance', activity_type='Travel', aio_id=None):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
         self.aio_id = aio_id
-        self.df = df  # main data frame
-        self.row_name = row_name
-        self.column_name = column_name
-        self.row_list = row_list
-        self.input_custom_name = input_custom_name # custom dropdown name
-        self.input_custom_list = input_custom_list # custom drop down options
-        self.input_custom_column = input_custom_column_name # the name of the column to filter on in the file
+        self.activity_type = activity_type
+        self.df = df
+        self.dropdowns = dropdowns
+        self.index_name = pivot_elements['index']['attribute']
+        self.index_labels = pivot_elements['index']['labels']
+        self.column_name = pivot_elements['column']['attribute']
+        self.column_labels = pivot_elements['column']['labels']
         self.kind = kind
         # unit mapping
         unit_mapping = {
@@ -81,6 +53,13 @@ class LineChartAIO(html.Div):
         }
 
         self.unit = unit_mapping.get(self.kind, '?')
+
+        # initiate the id generator
+        self.ids_instance = LineChartAIO.ids(self.__class__.__name__)
+        # initiate id for the store and output in the front end html
+        self.store_id = self.ids_instance.generate('store', self.aio_id)
+        self.output_histogram_id = self.ids_instance.generate('output_histogram', self.aio_id)
+        self.output_table_id = self.ids_instance.generate('output_table', self.aio_id)
 
         # Style dictionary
         component_style = {
@@ -99,99 +78,16 @@ class LineChartAIO(html.Div):
                     dbc.Row(
                         dbc.Col(
                             [
-                                html.H1(f"Travel {self.kind} Distribution", style={'text-align': 'left'}),
-                                html.P(f"{self.kind} is the {self.kind.lower()} between home and the primary destination.", style={'text-align': 'left'}),
-
+                                html.H1(f"{self.activity_type} {self.kind} Distribution", style={'text-align': 'left'}),
+                                html.P(f"{self.kind} between {'home' if self.activity_type.lower()=='tour' else 'origin'} and the {'primary' if self.activity_type.lower()=='tour' else ''} destination", style={'text-align': 'left', 'color': '#0078ae'}),
                                 # Group the dropdowns together with titles
-                                dbc.Row(
-                                    [
-                                        dbc.Col(html.Label("Select Travel Purpose:", style={'font-weight': 'bold'}), width=12),
-                                        dbc.Col(
-                                            dcc.Dropdown(
-                                                id=self.ids.input_purpose(self.aio_id),
-                                                options=[
-                                                    {'label': 'Work', 'value': 1},
-                                                    {'label': 'School', 'value': 2},
-                                                    {'label': 'Others', 'value': 3},
-                                                ],
-                                                placeholder="Choose the purpose of travel",
-                                                value=1
-                                            ),
-                                            width=6,
-                                        ),
-                                    ],
-                                    style={'margin-bottom': '15px'}
-                                ),
-                                dbc.Row(
-                                    [
-                                        dbc.Col(html.Label("Select Travel Mode:", style={'font-weight': 'bold'}), width=12),
-                                        dbc.Col(
-                                            dcc.Dropdown(
-                                                id=self.ids.input_mode(self.aio_id),
-                                                options=[
-                                                    {'label': 'Auto (SOV, HOV2, HOV3+)', 'value': 1},
-                                                    {'label': 'Transit (Walk To Transit, Drive To Transit)', 'value': 2},
-                                                    {'label': 'Active (Walk, Bike)', 'value': 3},
-                                                ],
-                                                placeholder="Choose the purpose of travel",
-                                                value=1
-                                            ),
-                                            width=6,
-                                        ),
-                                    ],
-                                    style={'margin-bottom': '15px'}
-                                ),
-                                dbc.Row(
-                                    [
-                                        dbc.Col(html.Label("Select Origin County:", style={'font-weight': 'bold'}), width=12),
-                                        dbc.Col(
-                                            dcc.Dropdown(
-                                                id=self.ids.input_county(self.aio_id),
-                                                options=[
-                                                    {'label': 'All Counties', 'value': 'all'},
-                                                    {'label': 'Bucks', 'value': 1},
-                                                    {'label': 'Chester', 'value': 2},
-                                                    {'label': 'Delaware', 'value': 3},
-                                                    {'label': 'Montgomery', 'value': 4},
-                                                    {'label': 'Philadelphia', 'value': 5},
-                                                    {'label': 'Burlington', 'value': 6},
-                                                    {'label': 'Camden', 'value': 7},
-                                                    {'label': 'Gloucester', 'value': 8},
-                                                    {'label': 'Mercer', 'value': 9},
-                                                ],
-                                                placeholder="Choose the origin county",
-                                                value='all'
-                                            ),
-                                            width=6,
-                                        ),
-                                    ],
-                                    style={'margin-bottom': '15px'}
-                                ),
-                                dbc.Row(
-                                    [
-                                        dbc.Col(html.Label(f"Select {self.input_custom_name}:", style={'font-weight': 'bold'}), width=12),
-                                        dbc.Col(
-                                            dcc.Dropdown(
-                                                id=self.ids.input_custom(self.aio_id),
-                                                options= [
-                                                    {'label': f"All {self.input_custom_name}", 'value': 'all'},
-                                                    *({'label': name, 'value': idx + 1} for idx, name in enumerate(self.input_custom_list))
-                                                ],
-                                                placeholder=f"Choose {self.input_custom_name}",
-                                                value='all'
-                                            ),
-                                            width=6,
-                                        ),
-                                    ],
-                                    style={'margin-bottom': '30px'}
-                                ),  
-                                
+                                *self.generate_dropdowns(self.dropdowns),                                
                                 # Row for Scatter Chart and Table
                                 dbc.Row(
                                     [
                                         dbc.Col(
                                             html.Div(
-                                                id=self.ids.scatter_container(self.aio_id),
+                                                id=self.output_histogram_id,
                                                 children=[],
                                                 style={'margin-top': '30px'}
                                             ),
@@ -199,7 +95,7 @@ class LineChartAIO(html.Div):
                                         ),
                                         dbc.Col(
                                             html.Div(
-                                                id=self.ids.table_container(self.aio_id),
+                                                id=self.output_table_id,
                                                 children=[],
                                                 style={'margin-top': '30px'}
                                             ),
@@ -212,7 +108,7 @@ class LineChartAIO(html.Div):
                             style={'height': '100vh', 'padding': '10px'}
                         )
                     ),
-                    dcc.Store(id=self.ids.store(self.aio_id), data=[])
+                    dcc.Store(self.store_id, data=[])
                 ],
                 style=component_style,
                 className="container-fluid",
@@ -223,11 +119,31 @@ class LineChartAIO(html.Div):
         # register the callbacks here
         self.register_callbacks()
 
+    def generate_dropdowns(self, dropdown_dict):
+        return [
+            dbc.Row(
+                [
+                    dbc.Col(html.Label(f"{self.activity_type} {dropdown['label']}:", style={'font-weight': 'bold'}), width=12),
+                    dbc.Col(
+                        dcc.Dropdown(
+                            id=self.ids_instance.generate(key, self.aio_id),
+                            options=dropdown['options'],
+                            placeholder=f"Choose the {dropdown['label'].lower()}",
+                            value=dropdown['options'][0]['value']
+                        ),
+                        width=6,
+                    ),
+                ],
+                style={'margin-bottom': '15px'}
+            )
+            for key, dropdown in dropdown_dict.items()
+        ]
+
     # methods
     def data_processing(self, filters, var1, var2):
         filters_copy = {
             key: value for key, value in filters.items() if value != 'all'
-        }  # Remove all 'all' keys to not filter on them        
+        }  # Remove all 'all' keys to not filter on them    
         filtered_df = filter_df(self.df, filters_copy)[[var1, var2]]
         return group_to_dict(filtered_df, var1, var2)
 
@@ -272,7 +188,7 @@ class LineChartAIO(html.Div):
                 line=dict(width=3.0, color=category_to_color[category]),
                 fill='tozeroy',
                 fillcolor=category_to_color[category],  # Fill area under curve with the same color
-                name=f"{self.row_list[category-1]}"  # Display the name in the legend
+                name=f"{self.index_labels[category]}"  # Display the name in the legend
             )
             for category in kde_dict
         ]
@@ -295,7 +211,7 @@ class LineChartAIO(html.Div):
         data = [
             html.Tr(
                 [
-                    html.Td(f"{self.row_list[category - 1]}"),
+                    html.Td(f"{self.index_labels[category]}"),
                     html.Td(f"{numpy.mean(dict[category]):.2f} {self.unit}")
                 ]
             )
@@ -331,41 +247,38 @@ class LineChartAIO(html.Div):
 
     # final function to make the line graph
     @cache.memoize()
-    def make_line_graph(self, dict, var1, var2):
+    def make_line_graph(self, dict, var1, var2, _id):
         dict = self.data_processing(dict, var1, var2)
         return self.create_kde_graph(self.creat_kde_xy(dict))
 
     @cache.memoize()
-    def make_table(self, dict, var1, var2):
+    def make_table(self, dict, var1, var2, _id):
         dict = self.data_processing(dict, var1, var2)
         return self.create_average_table(dict)
 
     def register_callbacks(self):
         @callback(
-            Output(self.ids.store(self.aio_id), 'data'),
-            Input(self.ids.input_purpose(self.aio_id), 'value'),
-            Input(self.ids.input_mode(self.aio_id), 'value'),
-            Input(self.ids.input_county(self.aio_id), 'value'),
-            Input(self.ids.input_custom(self.aio_id), 'value')
+            Output(self.store_id, 'data'),
+            [Input(self.ids_instance.generate(key, self.aio_id), 'value') for key in self.dropdowns.keys()]
         )
-        def compute_value(purp, mode, ocounty, custom):
-            # Prepare the state data structure
+        def compute_value(*values):
+            dropdown_values = dict(zip(self.dropdowns.keys(), values))
             state_data = {
-                'filters': {'pdpurp2': purp, 'tourmode2': mode, 'ocounty': ocounty, self.input_custom_column: custom},
-                'row_name': self.row_name,
-                'column_name': self.column_name
+                'filters': dropdown_values,
+                'row_name': self.index_name,
+                'column_name': self.column_name,
             }
-            self.make_line_graph(state_data['filters'], state_data['row_name'], state_data['column_name'])
-            self.make_table(state_data['filters'], state_data['row_name'], state_data['column_name'])
+            self.make_line_graph(state_data['filters'], state_data['row_name'], state_data['column_name'], self.aio_id)
+            self.make_table(state_data['filters'], state_data['row_name'], state_data['column_name'], self.aio_id)
             return state_data
 
         @callback(
-            Output(self.ids.scatter_container(self.aio_id), 'children'),
-            Output(self.ids.table_container(self.aio_id), 'children'),
-            Input(self.ids.store(self.aio_id), 'data')
+            Output(self.output_histogram_id, 'children'),
+            Output(self.output_table_id, 'children'),
+            Input(self.store_id, 'data')
         )
         def update_graph(data):
             return (
-                self.make_line_graph(data['filters'], data['row_name'], data['column_name']), 
-                self.make_table(data['filters'], data['row_name'], data['column_name'])
+                self.make_line_graph(data['filters'], data['row_name'], data['column_name'], self.aio_id), 
+                self.make_table(data['filters'], data['row_name'], data['column_name'], self.aio_id)
             )
