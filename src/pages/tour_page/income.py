@@ -79,6 +79,88 @@ pivots_pie_charts = {
         }
     }
 }
+
+dropdowns_distribution = {
+    'pdpurp2': {
+        'label': 'Purpose',
+        'options': [
+            {'label': 'Work', 'value': 1},
+            {'label': 'School', 'value': 2},
+            {'label': 'Others', 'value': 3},
+        ]
+
+    },
+    'tourmode2': {
+        'label': 'Tour Mode',
+        'options': [
+            {'label': 'Auto (SOV, HOV2, HOV3+)', 'value': 1},
+            {'label': 'Transit (Walk To Transit, Drive To Transit)', 'value': 2},
+            {'label': 'Active (Walk, Bike)', 'value': 3},
+        ]
+
+    },
+
+    'ocounty': {
+        'label': 'Origin County',
+        'options': [
+
+            {'label': 'All Counties', 'value': 'all'},
+            {'label': 'Bucks', 'value': 1},
+            {'label': 'Chester', 'value': 2},
+            {'label': 'Delaware', 'value': 3},
+            {'label': 'Montgomery', 'value': 4},
+            {'label': 'Philadelphia', 'value': 5},
+            {'label': 'Burlington', 'value': 6},
+            {'label': 'Camden', 'value': 7},
+            {'label': 'Gloucester', 'value': 8},
+        ]
+
+    },
+    'lowinc': {
+        'label': 'Income Level',
+        'options': [
+
+            {'label': 'All Income Level', 'value': 'all'},
+            {'label': 'Above 2x Poverty Line', 'value': 1},
+            {'label': 'Above Poverty Line', 'value': 2},
+            {'label': 'Below Poverty Line', 'value': 3},
+        ]
+
+    }
+}
+
+pivots_dist_distance = {
+    'index': {
+        'attribute': 'lowinc',
+        'labels': {  
+            1: 'Above 2x Poverty Line',
+            2: 'Above Poverty Line',
+            3: 'Below Poverty Line',
+        }
+    },
+    'column': {
+        'attribute': 'tautodist',
+        'labels': {  # continues variable
+        }
+    }
+}
+
+pivots_dist_duration = {
+    'index': {
+        'attribute': 'lowinc',
+        'labels': {  
+            1: 'Above 2x Poverty Line',
+            2: 'Above Poverty Line',
+            3: 'Below Poverty Line',
+        }
+    },
+    'column': {
+        'attribute': 'ttravtime',
+        'labels': {  # continues variable
+        }
+    }
+}
+
 # Layout
 layout = dbc.Container(
     [
@@ -87,10 +169,6 @@ layout = dbc.Container(
             dbc.Col(
                 PieChartAIO(
                     tour_df,
-                    row_name='lowinc',
-                    column_name='tourmode',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
-                    column_list=['SOV', 'HOV2', 'HOV3+', 'Drive To Transit', 'Walk To Transit', 'Bike', 'Walk', 'School Bus'],
                     dropdowns=dropdowns_pie_charts,
                     pivot_elements=pivots_pie_charts, # pivot table index and columns
                     activity_type='Tour', # default is Travel
@@ -106,13 +184,10 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     tour_df,
-                    row_name='lowinc',
-                    column_name='tautodist',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    dropdowns=dropdowns_distribution,
+                    pivot_elements=pivots_dist_distance, # pivot table index and columns
                     kind='Distance',
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'African American Race', 'Asian Race', 'Others Race'],
+                    activity_type='Tour',
                     aio_id='inc_distance_distribution_tour'
                 ),
                 width=12  # Full width for all screen sizes
@@ -125,13 +200,10 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     tour_df,
-                    row_name='lowinc',
-                    column_name='ttravtime',
-                    row_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
-                    input_custom_name='Race',
-                    input_custom_column_name='RACE',
-                    input_custom_list=['White Race', 'African American Race', 'Asian Race', 'Others Race'],
+                    dropdowns=dropdowns_distribution,
+                    pivot_elements=pivots_dist_duration, # pivot table index and columns
                     kind='Duration',
+                    activity_type='Tour',
                     aio_id='inc_travel_time_distribution_tour'
                 ),
                 width=12  # Full width for all screen sizes
