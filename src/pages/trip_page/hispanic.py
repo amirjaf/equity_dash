@@ -17,7 +17,7 @@ dash.register_page(
 from .load_trip_data import trip_df
 
 dropdowns_pie_charts = {
-    'pdpurp2': {
+    'dpurp2': {
         'label': 'Purpose',
         'options': [
             {'label': 'Work', 'value': 1},
@@ -64,19 +64,98 @@ pivots_pie_charts = {
         }
     },
     'column': {
-        'attribute': 'tourmode',
+        'attribute': 'tripmode',
         'labels': {  
             1: 'SOV',
             2: 'HOV2',
             3: 'HOV3+',
-            4: 'Drive To Transit',
-            5: 'Walk To Transit',
+            5: 'Transit',
             6: 'Bike',
             7: 'Walk',
             8: 'School Bus',
         }
     }
 }
+
+dropdowns_distribution = {
+    'dpurp2': {
+        'label': 'Purpose',
+        'options': [
+            {'label': 'Work', 'value': 1},
+            {'label': 'School', 'value': 2},
+            {'label': 'Others', 'value': 3},
+        ]
+
+    },
+    'tripmode2': {
+        'label': 'Trip Mode',
+        'options': [
+            {'label': 'Auto (SOV, HOV2, HOV3+)', 'value': 1},
+            {'label': 'Transit (Walk To Transit, Drive To Transit)', 'value': 2},
+            {'label': 'Active (Walk, Bike)', 'value': 3},
+        ]
+
+    },
+
+    'ocounty': {
+        'label': 'Origin County',
+        'options': [
+
+            {'label': 'All Counties', 'value': 'all'},
+            {'label': 'Bucks', 'value': 1},
+            {'label': 'Chester', 'value': 2},
+            {'label': 'Delaware', 'value': 3},
+            {'label': 'Montgomery', 'value': 4},
+            {'label': 'Philadelphia', 'value': 5},
+            {'label': 'Burlington', 'value': 6},
+            {'label': 'Camden', 'value': 7},
+            {'label': 'Gloucester', 'value': 8},
+        ]
+
+    },
+    'lowinc': {
+        'label': 'Income Level',
+        'options': [
+
+            {'label': 'All Income Level', 'value': 'all'},
+            {'label': 'Above 2x Poverty Line', 'value': 1},
+            {'label': 'Above Poverty Line', 'value': 2},
+            {'label': 'Below Poverty Line', 'value': 3},
+        ]
+
+    }
+}
+
+pivots_dist_distance = {
+    'index': {
+        'attribute': 'HISP_B',
+        'labels': {  
+            1: 'Non-hispanic',
+            2: 'Hispanic',
+        }
+    },
+    'column': {
+        'attribute': 'travdist',
+        'labels': {  # continues variable
+        }
+    }
+}
+
+pivots_dist_duration = {
+    'index': {
+        'attribute': 'HISP_B',
+        'labels': {  
+            1: 'Non-hispanic',
+            2: 'Hispanic',
+        }
+    },
+    'column': {
+        'attribute': 'ttravtime',
+        'labels': {  # continues variable
+        }
+    }
+}
+
 # Layout
 layout = dbc.Container(
     [
@@ -85,10 +164,6 @@ layout = dbc.Container(
             dbc.Col(
                 PieChartAIO(
                     trip_df,
-                    row_name='HISP_B',
-                    column_name='tourmode',
-                    row_list=['Non-hispanic', 'Hispanic'],
-                    column_list=['SOV', 'HOV2', 'HOV3+', 'Transit', 'Bike', 'Walk', 'School Bus'],
                     dropdowns=dropdowns_pie_charts,
                     pivot_elements=pivots_pie_charts, # pivot table index and columns
                     activity_type='Trip', # default is Travel
@@ -104,13 +179,10 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     trip_df,
-                    row_name='HISP_B',
-                    column_name='travdist',
-                    row_list=['Non-hispanic', 'Hispanic'],
-                    input_custom_name='Income Level',
-                    input_custom_column_name='lowinc',
-                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    dropdowns=dropdowns_distribution,
+                    pivot_elements=pivots_dist_distance, # pivot table index and columns
                     kind='Distance',
+                    activity_type='Trip',
                     aio_id='hisp_distance_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
@@ -123,13 +195,10 @@ layout = dbc.Container(
             dbc.Col(
                 LineChartAIO(
                     trip_df,
-                    row_name='HISP_B',
-                    column_name='ttravtime',
-                    row_list=['White Race', 'African American Race', 'Asian Race', 'Others Race'],
-                    input_custom_name='Income Level',
-                    input_custom_column_name='lowinc',
-                    input_custom_list=['Above 2x Poverty Line', 'Above Poverty Line', 'Below Poverty Line'],
+                    dropdowns=dropdowns_distribution,
+                    pivot_elements=pivots_dist_duration, # pivot table index and columns
                     kind='Duration',
+                    activity_type='Trip',
                     aio_id='hisp_travel_time_distribution_trip'
                 ),
                 width=12  # Full width for all screen sizes
