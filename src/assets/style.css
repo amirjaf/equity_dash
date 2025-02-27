@@ -1,0 +1,11 @@
+/* Change the active background color and text color of active nav-links */
+.nav-link.active {
+    background-color: #bbe2f2 !important; /* Light blue background */
+    color: #0078ae !important; /* Custom text color */
+}
+
+/* Custom styles for the trip page navbar (specific to .custom-trip-navbar) */
+.vertical_navbar .nav-link.active {
+    background-color: #0078ae !important; /* Peach background for active state */
+    color: #bbe2f2 !important;           /* Chocolate text color */
+}

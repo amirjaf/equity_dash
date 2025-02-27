@@ -66,6 +66,13 @@ dash-app-structure
 |   |   |   |-- load_tour_data.py
 |   |   |   |-- main.py
 |   |   |   |-- race.py
+|   |   |-- trip_page
+|   |   |   |-- __init__.py
+|   |   |   |-- hispanic.py
+|   |   |   |-- income.py
+|   |   |   |-- load_trip_data.py
+|   |   |   |-- main.py
+|   |   |   |-- race.py
 |   |   |-- home.py
 |   |   |-- not_found_404.py
 |   |-- utils

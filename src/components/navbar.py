@@ -10,7 +10,7 @@ from dash import html, callback, Output, Input, dcc, State
 import dash_bootstrap_components as dbc
 
 # local imports
-from utils.images import logo_encoded
+from utils.images import logo_encoded, logo_encoded_equity_dash
 
 # Navbar component
 navbar = dbc.Navbar(
@@ -19,7 +19,7 @@ navbar = dbc.Navbar(
             html.A(
                 dbc.Row(
                     [
-                        dbc.Col(html.Img(src=logo_encoded, height="60px")),
+                        dbc.Col(html.Img(src=logo_encoded, height="65px")),
                     ],
                     align="center",
                     className="g-0",
@@ -30,19 +30,35 @@ navbar = dbc.Navbar(
                     "marginRight": "20px"
                 },
             ),
+            html.A(
+                dbc.Row(
+                    [
+                        dbc.Col(html.Img(src=logo_encoded_equity_dash, height="160px")),
+                    ],
+                    align="center",
+                    className="g-0",
+                ),
+                href="/",
+                style={
+                    "textDecoration": "none",
+                    "marginRight": "20px"
+                },
+            ),
+            
+
             dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
             dbc.Collapse(
                 dbc.Nav(
                     [
                         dbc.NavItem(
-                            dbc.NavLink("Home", href="/", id="nav-home", style={"fontSize": "25px", "padding": "20px", "color": "white"},active=False)
+                            dbc.NavLink("Home", href="/", id="nav-home", style={"fontSize": "25px", "padding": "20px", "color": "#0078ae"}, active=False)
                         ),
                         dbc.NavItem(
-                            dbc.NavLink("Tour Based", href="/tour_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "white"}, id="nav-tour-based", active=False)
-                        ), # refrence to the first tab of the 'tour based' page
+                            dbc.NavLink("Tour Based", id="nav-tour-based", href="/tour_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "#0078ae"}, active=False)
+                        ),  # Reference to the first tab of the 'tour based' page
                         dbc.NavItem(
-                            dbc.NavLink("Trip Based", href="/trip_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "white"}, id="nav-trip-based", active=False)
-                        ), # refrence to the first tab of the 'tour based' page
+                            dbc.NavLink("Trip Based",id="nav-trip-based", href="/trip_based/page_race", style={"fontSize": "25px", "padding": "20px", "color": "#0078ae"}, active=False)
+                        ),  # Reference to the first tab of the 'trip based' page
                     ],
                     pills=True,
                 ),
@@ -51,12 +67,16 @@ navbar = dbc.Navbar(
             ),
         ]
     ),
-    color="dark",
-    dark=True,
-    style={'height': '100px', 
-    'fontFamily': 'Arial, sans-serif',
+    color="light",  # Light background for the navbar
+    dark=True,  
+    style={
+        'height': '105px',  
+        'backgroundColor': 'white',  
+        'fontFamily': 'Arial, sans-serif',  
     }
 )
+
+
 
 
 # Callback to set the active state of navigation links based on the URL

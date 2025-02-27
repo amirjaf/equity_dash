@@ -24,7 +24,7 @@ layout = html.Div(
             "Welcome To DVRPC Equity Dashboard!",
             style={
                 "text-align": "left",
-                "color": "#85c1e9",
+                "color": "#0078ae",
                 "margin-bottom": "20px"
             }
         ),
@@ -39,7 +39,7 @@ layout = html.Div(
             style={
                 "font-size": "20px",
                 "line-height": "1.6",
-                "color": "#333",
+                "color": "#0078ae",
                 "margin-bottom": "20px",
                 "max-width": "50%",  # Limit the paragraph width
                 "text-align": "left",  # Keep text alignment to the left
