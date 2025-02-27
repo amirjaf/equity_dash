@@ -1,0 +1,38 @@
+version: '3.8'
+
+# env_file:
+#   - ${ENVIRONMENT_FILE:-.env.development}
+services:
+  db:
+    image: postgres:15 
+    container_name: database
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dash_network
+    env_file:
+      - ${ENVIRONMENT_FILE:-.env.development}
+
+  # dash_app:
+  #   build:
+  #     context: ./src # Replace with your Dash app's directory
+  #     dockerfile: Dockerfile  # Optional: specify the Dockerfile name if it's different
+  #   container_name: dash_app
+  #   restart: always
+  #   environment:
+  #     - ENVIRONMENT_FILE=${ENVIRONMENT_FILE:-.env.development}  # Ensure ENVIRONMENT_FILE is passed to the container
+  #   env_file:
+  #     - ${ENVIRONMENT_FILE:-.env.development}  # Use the value of ENVIRONMENT_FILE to load environment variables
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - dash_network
+
+volumes:
+  postgres_data:  # Persistent volume to store database data
+
+networks:
+  dash_network:  # Shared network for all services
