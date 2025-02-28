@@ -23,12 +23,12 @@ from server import server
 dash_app = dash.Dash(
     __name__,
     server=server,
-    use_pages=True,  # turn on Dash pages
+    use_pages=True,  
     external_stylesheets=[
         dbc.themes.BOOTSTRAP,
         dbc.icons.FONT_AWESOME
-    ],  # fetch the proper css items we want
-    meta_tags=[  # check if device is a mobile device. This is a must if you do any mobile styling
+    ],  
+    meta_tags=[  
         {
             'name': 'viewport',
             'content': 'width=device-width, initial-scale=1'
@@ -44,23 +44,23 @@ def serve_layout():
     '''Define the layout of the application'''
     return html.Div(
         [
-            dcc.Location(id="url", refresh=False),  # Tracks the current URL
+            dcc.Location(id="url", refresh=False),  # URL bar
             navbar,  # Horizontal navbar visible on all pages
             # Vertical navbar container. We need one container for each page.
             html.Div(
-                id="vertical-navbar-container_1",  # Vertical navbar container
+                id="vertical-navbar-container_1",  
             ),
             html.Div(
-                id="vertical-navbar-container_2",  # Vertical navbar container
+                id="vertical-navbar-container_2", 
             ),
             html.Div(
                 dash.page_container,  # Page-specific content managed by Dash
                 style={
-                    "marginLeft": "250px",  # Offset the content to make room for the vertical navbar
-                    "padding": "1rem",  # Padding for the content area
+                    "marginLeft": "250px", 
+                    "padding": "1rem",  
                     "height": "calc(100vh - 60px)",  # Full height minus the horizontal navbar height
-                    "overflowY": "auto",  # Allow scrolling for content when needed
-                    "position": "relative",  # Ensure content scrolls without affecting navbar position
+                    "overflowY": "auto",  
+                    "position": "relative",  
                     "paddingTop": "60px",  # Offset for the horizontal navbar height
                 },
             ),
@@ -75,7 +75,7 @@ def serve_layout():
 
 
 # set up the layout
-dash_app.layout = serve_layout  # set the layout to the serve_layout function
+dash_app.layout = serve_layout 
 
 # NOTE: It is a bit dirty. But, Flask server needs to have a route explicitly for the starting page (i.e., "/")
 @server.route("/")
