@@ -1,42 +1,82 @@
-# notes
-'''
-This file is used for handling queries from client. 
-'''
+from sqlalchemy import text
+import pandas as pd
 
-# package imports
-import pandas
-import os
+from .db_connection import engine
 
-def get_tour_data():
-    cwd = os.getcwd()
-    data_path = os.path.join(cwd, 'src', 'assets', 'data', 'tour_data_processed_0701.pkl')
-    needed_columns = ['RACE', 'tourmode', 'psexpfac', 'pdpurp2', 'pdpurp', 'ocounty', 'HISP_B', 'lowinc','distcat', 'tautodist','distcat', 'tourmode2', 'timecat2', 'ttravtime']
-    df = pandas.read_pickle(data_path)
-    assert all(column in df.columns for column in needed_columns), "All columns are available." # make sure all columns are available
-    df = df[df['tourmode']!=0] # remove 'other' mode
-    df['lowinc'] = df['lowinc'] + 1 # I need my categories to start from 1. to be able to get the correct title name for the graphs. 
-    df['HISP_B'] = df['HISP_B'] + 1 # I need my categories to start from 1. to be able to get the correct title name for the graphs. 
-    return df
+# CONSTANTS
+PERSON_WEIGHT = 'psexpfac'
 
-def get_trip_data():
-    cwd = os.getcwd()
-    data_path = os.path.join(cwd, 'src', 'assets', 'data', 'trip_data_processed_0701.pkl')
-    needed_columns = ['RACE', 'tripmode', 'psexpfac', 'dpurp2', 'dpurp', 'ocounty', 'HISP_B', 'lowinc','distcat', 'travdist','distcat', 'tripmode2', 'timecat2', 'ttravtime']
-    df = pandas.read_pickle(data_path)
-    assert all(column in df.columns for column in needed_columns), "All columns are available." # make sure all columns are available
-    df.rename(columns={'dpurp2': 'pdpurp2', 'dpurp': 'pdpurp', 'tripmode2': 'tourmode2', 'tripmode': 'tourmode'}, inplace=True) # rename the columns to match the tour dataframe. NOTE: It is not the cleanest way to do that but it is the fastest way. The proper way is to modify the components to get the variables dynamically.     
-    # df = df[df['tripmode']!=0] # remove 'other' mode
-    df = df[df['tourmode']!=0] # NOTE: the name has changed
-    mode_mapping = {
-        1: 1,
-        2: 2,
-        3: 3,
-        5: 4,
-        6: 5,
-        7: 6,
-        8: 7,
-    }
-    df['tourmode'] = df['tourmode'].map(mode_mapping)
-    df['lowinc'] = df['lowinc'] + 1 # I need my categories to start from 1. to be able to get the correct title name for the graphs. 
-    df['HISP_B'] = df['HISP_B'] + 1 # I need my categories to start from 1. to be able to get the correct title name for the graphs. 
-    return df
+def filter_and_pivot(table_name, conditions, var1, var2):
+    """
+    Filters a SQL table based on conditions and pivots the results.
+
+    Parameters:
+        table_name (str): The name of the SQL table. Example: 'tour_data_processed_0701'
+        conditions (dict): A dictionary where keys are column names and values are filter criteria. Example: {'ocounty': 5, 'tourmode2': 3}
+        var1 (str): Column for pivot rows. Example: 'race'
+        var2 (str): Column for pivot columns. Example: 'mode'
+
+    Returns:
+        pd.DataFrame: Pivot table with aggregated sums. 
+                      The index will be `var1`, the columns will be `var2`, and the values will be the sum of `PERSON_WEIGHT`.
+    """
+
+    where_clause = " AND ".join([f"{col} = :{col}" for col in conditions])
+    where_clause = f"WHERE {where_clause}" if conditions else ""
+
+    sql_query = text(f"""
+        SELECT {var1}, {var2}, SUM({PERSON_WEIGHT}) AS weight_sum
+        FROM {table_name}
+        {where_clause} AND {var2} IS NOT NULL
+        GROUP BY {var1}, {var2}
+    """)
+
+    with engine.connect() as conn:
+        df = pd.read_sql(sql_query, conn, params=conditions)
+
+    return df.pivot(index=var1, columns=var2, values='weight_sum').sort_index(axis=0).sort_index(axis=1).fillna(0)
+
+
+def filter_and_list(table_name, conditions, var1, var2):
+    """
+    Filters a SQL table based on conditions and groups var2 values into lists based on var1.
+
+    Parameters:
+        table_name (str): The name of the SQL table. Example: 'tour_data_processed_0701'
+        conditions (dict): A dictionary where keys are column names and values are filter criteria. Example: {'ocounty': 5, 'tourmode2': 3}
+        var1 (str): The column to group by. Example: 'race'
+        var2 (str): The column to aggregate into lists. Example: 'mode'
+
+    Returns:
+        dict: A dictionary where keys are unique values of var1 and values are lists of corresponding var2 values.
+              Example: {1: ['x', 'y'], 2: ['z']}
+    """
+    where_clause = " AND ".join([f"{col} = :{col}" for col in conditions])
+    where_clause = f"WHERE {where_clause}" if conditions else ""
+
+    sql_query = text(f"""
+        SELECT {var1}, 
+               array_agg({var2}) AS {var2}_values
+        FROM {table_name}
+        {where_clause}
+        GROUP BY {var1}
+        ORDER BY {var1}
+    """)
+
+    with engine.connect() as conn:
+        result = conn.execute(sql_query, conditions)
+        rows = result.fetchall()
+
+    return {row[0]: row[1] for row in rows}
+
+
+if __name__ == "__main__":
+    # TEST
+    table_name = 'tour_data_processed_0701'
+    conditions = {'pdpurp2': 1, 'ocounty': 5}
+    var1 = 'race'
+    var2 = 'tourmode'
+    print(filter_and_pivot(table_name, conditions, var1, var2))
+    var1 = 'race'
+    var2 = 'tautodist'
+    print(filter_and_list(table_name, conditions, var1, var2))

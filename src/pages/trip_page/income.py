@@ -13,9 +13,6 @@ dash.register_page(
     title='Income Analysis'
 )
 
-# load the processed tour file
-from .load_trip_data import trip_df
-
 dropdowns_pie_charts = {
     'dpurp2': {
         'label': 'Purpose',
@@ -42,7 +39,7 @@ dropdowns_pie_charts = {
         ]
 
     },
-    'RACE': {
+    'race': {
         'label': 'Race',
         'options': [
 
@@ -60,9 +57,9 @@ pivots_pie_charts = {
     'index': {
         'attribute': 'lowinc',
         'labels': {  
-            1: 'Above 2x Poverty Line',
-            2: 'Above Poverty Line',
-            3: 'Below Poverty Line',
+            0: 'Above 2x Poverty Line',
+            1: 'Above Poverty Line',
+            2: 'Below Poverty Line',
         }
     },
     'column': {
@@ -120,9 +117,9 @@ dropdowns_distribution = {
         'options': [
 
             {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 1},
-            {'label': 'Above Poverty Line', 'value': 2},
-            {'label': 'Below Poverty Line', 'value': 3},
+            {'label': 'Above 2x Poverty Line', 'value': 0},
+            {'label': 'Above Poverty Line', 'value': 1},
+            {'label': 'Below Poverty Line', 'value': 2},
         ]
 
     }
@@ -132,9 +129,9 @@ pivots_dist_distance = {
     'index': {
         'attribute': 'lowinc',
         'labels': {  
-            1: 'Above 2x Poverty Line',
-            2: 'Above Poverty Line',
-            3: 'Below Poverty Line',
+            0: 'Above 2x Poverty Line',
+            1: 'Above Poverty Line',
+            2: 'Below Poverty Line',
         }
     },
     'column': {
@@ -148,9 +145,9 @@ pivots_dist_duration = {
     'index': {
         'attribute': 'lowinc',
         'labels': {  
-            1: 'Above 2x Poverty Line',
-            2: 'Above Poverty Line',
-            3: 'Below Poverty Line',
+            0: 'Above 2x Poverty Line',
+            1: 'Above Poverty Line',
+            2: 'Below Poverty Line',
         }
     },
     'column': {
@@ -167,7 +164,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 PieChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_pie_charts,
                     pivot_elements=pivots_pie_charts, # pivot table index and columns
                     activity_type='Trip', # default is Travel
@@ -182,7 +179,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_distance, # pivot table index and columns
                     kind='Distance',
@@ -198,7 +195,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_duration, # pivot table index and columns
                     kind='Duration',

@@ -12,9 +12,6 @@ dash.register_page(
     title='Race Analysis'
 )
 
-# load the processed tour file
-from .load_trip_data import trip_df
-
 dropdowns_pie_charts = {
     'dpurp2': {
         'label': 'Purpose',
@@ -56,7 +53,7 @@ dropdowns_pie_charts = {
 
 pivots_pie_charts = {
     'index': {
-        'attribute': 'RACE',
+        'attribute': 'race',
         'labels': {  
             1: 'White Race',
             2: 'African American Race',
@@ -119,9 +116,9 @@ dropdowns_distribution = {
         'options': [
 
             {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 1},
-            {'label': 'Above Poverty Line', 'value': 2},
-            {'label': 'Below Poverty Line', 'value': 3},
+            {'label': 'Above 2x Poverty Line', 'value': 0},
+            {'label': 'Above Poverty Line', 'value': 1},
+            {'label': 'Below Poverty Line', 'value': 2},
         ]
 
     }
@@ -129,7 +126,7 @@ dropdowns_distribution = {
 
 pivots_dist_distance = {
     'index': {
-        'attribute': 'RACE',
+        'attribute': 'race',
         'labels': {  
             1: 'White Race',
             2: 'African American Race',
@@ -146,7 +143,7 @@ pivots_dist_distance = {
 
 pivots_dist_duration = {
     'index': {
-        'attribute': 'RACE',
+        'attribute': 'race',
         'labels': {  
             1: 'White Race',
             2: 'African American Race',
@@ -168,7 +165,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 PieChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_pie_charts,
                     pivot_elements=pivots_pie_charts, # pivot table index and columns
                     activity_type='Trip', # default is 'Travel'
@@ -183,7 +180,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_distance, # pivot table index and columns
                     kind='Distance',
@@ -199,7 +196,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    trip_df,
+                    'trip_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_duration, # pivot table index and columns
                     kind='Duration',

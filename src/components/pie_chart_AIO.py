@@ -17,8 +17,7 @@ import uuid
 import plotly.graph_objects as go
 
 # Local imports
-from utils.data_loader import get_tour_data
-from utils.data_handling import filter_df, cross_tab
+from utils.db_requests import filter_and_pivot
 from cache import cache
 
 
@@ -34,13 +33,13 @@ class PieChartAIO(html.Div):
                 'aio_id': aio_id
             }
 
-    def __init__(self, df, dropdowns, pivot_elements, activity_type='Travel', aio_id=None):
+    def __init__(self, table_name, dropdowns, pivot_elements, activity_type='Travel', aio_id=None):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
         self.aio_id = aio_id
         self.activity_type = activity_type
-        self.df = df
+        self.table_name = table_name
         self.dropdowns = dropdowns
         self.index_name = pivot_elements['index']['attribute']
         self.index_labels = pivot_elements['index']['labels']
@@ -175,8 +174,8 @@ class PieChartAIO(html.Div):
         return pie_chart
 
     def global_store(self, filters, var1, var2):
-        filtered_data = filter_df(self.df, {k: v for k, v in filters.items() if v != 'all'})
-        return cross_tab(filtered_data, var1, var2)
+        filtered_data = filter_and_pivot(self.table_name, {k: v for k, v in filters.items() if v != 'all'}, var1, var2)
+        return filtered_data
 
     @cache.memoize()
     def make_pie_charts(self, data, _id):

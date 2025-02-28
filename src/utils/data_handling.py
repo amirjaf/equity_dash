@@ -41,7 +41,7 @@ def cross_tab(df, var1, var2):
     Returns:
         pd.DataFrame: A pivot table with counts for the cross-tabulation.
     Example:
-        cross_tab(df, RACE, MODE)
+        cross_tab(df, race, MODE)
     """
     pivot_table = pandas.pivot_table(
         df,

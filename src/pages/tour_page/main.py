@@ -12,7 +12,6 @@ import dash_bootstrap_components as dbc
 import os
 
 # local imports
-from utils.data_loader import get_tour_data
 from utils.data_handling import filter_df, cross_tab
 from components.pie_chart_AIO import PieChartAIO
 

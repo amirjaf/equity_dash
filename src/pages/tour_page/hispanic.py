@@ -13,9 +13,6 @@ dash.register_page(
     title='Hispanic Analysis'
 )
 
-# load the processed tour file
-from .load_tour_data import tour_df
-
 dropdowns_pie_charts = {
     'pdpurp2': {
         'label': 'Primary Purpose',
@@ -47,9 +44,9 @@ dropdowns_pie_charts = {
         'options': [
 
             {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 1},
-            {'label': 'Above Poverty Line', 'value': 2},
-            {'label': 'Below Poverty Line', 'value': 3},
+            {'label': 'Above 2x Poverty Line', 'value': 0},
+            {'label': 'Above Poverty Line', 'value': 1},
+            {'label': 'Below Poverty Line', 'value': 2},
         ]
 
     }
@@ -57,10 +54,10 @@ dropdowns_pie_charts = {
 
 pivots_pie_charts = {
     'index': {
-        'attribute': 'HISP_B',
+        'attribute': 'hisp_b',
         'labels': {  
-            1: 'Non-hispanic',
-            2: 'Hispanic',
+            0: 'Non-hispanic',
+            1: 'Hispanic',
         }
     },
     'column': {
@@ -119,9 +116,9 @@ dropdowns_distribution = {
         'options': [
 
             {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 1},
-            {'label': 'Above Poverty Line', 'value': 2},
-            {'label': 'Below Poverty Line', 'value': 3},
+            {'label': 'Above 2x Poverty Line', 'value': 0},
+            {'label': 'Above Poverty Line', 'value': 1},
+            {'label': 'Below Poverty Line', 'value': 2},
         ]
 
     }
@@ -129,10 +126,10 @@ dropdowns_distribution = {
 
 pivots_dist_distance = {
     'index': {
-        'attribute': 'HISP_B',
+        'attribute': 'hisp_b',
         'labels': {  
-            1: 'Non-hispanic',
-            2: 'Hispanic',
+            0: 'Non-hispanic',
+            1: 'Hispanic',
         }
     },
     'column': {
@@ -144,10 +141,10 @@ pivots_dist_distance = {
 
 pivots_dist_duration = {
     'index': {
-        'attribute': 'HISP_B',
+        'attribute': 'hisp_b',
         'labels': {  
-            1: 'Non-hispanic',
-            2: 'Hispanic',
+            0: 'Non-hispanic',
+            1: 'Hispanic',
         }
     },
     'column': {
@@ -165,7 +162,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 PieChartAIO(
-                    tour_df,
+                    'tour_data_processed_0701',
                     dropdowns=dropdowns_pie_charts,
                     pivot_elements=pivots_pie_charts, # pivot table index and columns
                     activity_type='Tour', # default is Travel
@@ -180,7 +177,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    tour_df,
+                    'tour_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_distance, # pivot table index and columns
                     kind='Distance',
@@ -196,7 +193,7 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    tour_df,
+                    'tour_data_processed_0701',
                     dropdowns=dropdowns_distribution,
                     pivot_elements=pivots_dist_duration, # pivot table index and columns
                     kind='Duration',

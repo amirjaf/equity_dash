@@ -17,7 +17,7 @@ from scipy.stats import gaussian_kde
 import numpy
 
 # Local imports
-from utils.data_handling import filter_df, group_to_dict
+from utils.db_requests import filter_and_list
 from cache import cache
 
 class LineChartAIO(html.Div):
@@ -33,13 +33,13 @@ class LineChartAIO(html.Div):
                 'aio_id': aio_id
             }
 
-    def __init__(self, df, dropdowns, pivot_elements, kind='Distance', activity_type='Travel', aio_id=None):
+    def __init__(self, table_name, dropdowns, pivot_elements, kind='Distance', activity_type='Travel', aio_id=None):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
         self.aio_id = aio_id
         self.activity_type = activity_type
-        self.df = df
+        self.table_name = table_name
         self.dropdowns = dropdowns
         self.index_name = pivot_elements['index']['attribute']
         self.index_labels = pivot_elements['index']['labels']
@@ -143,14 +143,15 @@ class LineChartAIO(html.Div):
     def data_processing(self, filters, var1, var2):
         filters_copy = {
             key: value for key, value in filters.items() if value != 'all'
-        }  # Remove all 'all' keys to not filter on them    
-        filtered_df = filter_df(self.df, filters_copy)[[var1, var2]]
-        return group_to_dict(filtered_df, var1, var2)
+        }   
+        filtered_df = filter_and_list(self.table_name, filters_copy, var1, var2)
+        return filtered_df
 
-    def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=200):
+    def creat_kde_xy(self, dict, bw_method='silverman', bw_adjust=0.3, bin_number=150):
         kde_dict = {}
         for key, numbers in dict.items():
             numbers = numpy.array(numbers)
+            numbers = numpy.trunc(numbers * 100) / 100 
             kde = gaussian_kde(numbers, bw_method=bw_method)
             kde.set_bandwidth(bw_method=kde.factor * bw_adjust)  # adjust the factor
             x_kde = numpy.linspace(min(numbers), max(numbers), bin_number)
@@ -175,7 +176,7 @@ class LineChartAIO(html.Div):
 
         # Assign colors dynamically while ensuring a loop if there are more categories than colors
         category_to_color = {
-            i: color_palette[(i-1) % len(color_palette)].format(opacity=opacity)
+            int(i): color_palette[(int(i)-1) % len(color_palette)].format(opacity=opacity)
             for i in kde_dict
         }
 

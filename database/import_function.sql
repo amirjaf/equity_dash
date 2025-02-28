@@ -18,13 +18,13 @@ BEGIN
         -- Dynamically create the table if it doesn't exist
         EXECUTE format('
             CREATE TABLE equity.%I (
-                RACE FLOAT, 
+                race FLOAT, 
                 tourmode FLOAT,
                 psexpfac FLOAT,
                 pdpurp2 FLOAT,
                 pdpurp FLOAT,
                 ocounty FLOAT,
-                HISP_B FLOAT,
+                hisp_b FLOAT,
                 lowinc FLOAT,
                 distcat FLOAT,
                 tautodist FLOAT,
@@ -68,13 +68,13 @@ BEGIN
         -- Dynamically create the table if it doesn't exist
         EXECUTE format('
             CREATE TABLE equity.%I (
-                RACE FLOAT, 
+                race FLOAT, 
                 tripmode FLOAT,
                 psexpfac FLOAT,
                 dpurp2 FLOAT,
                 dpurp FLOAT,
                 ocounty FLOAT,
-                HISP_B FLOAT,
+                hisp_b FLOAT,
                 lowinc FLOAT,
                 distcat FLOAT,
                 travdist FLOAT,
