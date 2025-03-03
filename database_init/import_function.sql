@@ -3,21 +3,18 @@ RETURNS VOID AS $$
 DECLARE
     column_count INT;
 BEGIN
-    -- Debug: Log filepath and tablename
-    RAISE NOTICE 'Filepath: %, Table: %', filepath, tablename;
+
+    RAISE NOTICE 'Filepath: %, Schema: %, Table: %', filepath, schemaname, tablename;
     
-    -- Check if the table exists
     IF NOT EXISTS (
         SELECT 1 
         FROM information_schema.tables 
         WHERE table_schema = schemaname AND table_name = tablename
     ) THEN
-        -- Debug: Table creation log
         RAISE NOTICE 'Table % does not exist, creating it...', tablename;
 
-        -- Dynamically create the table if it doesn't exist
         EXECUTE format('
-            CREATE TABLE equity.%I (
+            CREATE TABLE %I.%I (
                 race FLOAT, 
                 tourmode FLOAT,
                 psexpfac FLOAT,
@@ -31,18 +28,16 @@ BEGIN
                 tourmode2 FLOAT,
                 timecat2 FLOAT,
                 ttravtime FLOAT
-            )', tablename);
+            )', schemaname, tablename);
 
-        -- Debug: Log CSV import action
+ 
         RAISE NOTICE 'Importing CSV data from file: % into table %', filepath, tablename;
 
-        -- Import CSV data
-        EXECUTE format('COPY equity.%I FROM %L WITH CSV HEADER', tablename, filepath);
+        EXECUTE format('COPY %I.%I FROM %L WITH CSV HEADER', schemaname, tablename, filepath);
 
-        -- Debug: Successful completion log
         RAISE NOTICE 'Data import completed successfully for table %', tablename;
     ELSE
-        -- Debug: Table already exists, no action taken
+
         RAISE NOTICE 'Table % already exists, no action taken.', tablename;
     END IF;
 END;
@@ -53,21 +48,20 @@ RETURNS VOID AS $$
 DECLARE
     column_count INT;
 BEGIN
-    -- Debug: Log filepath and tablename
-    RAISE NOTICE 'Filepath: %, Table: %', filepath, tablename;
     
-    -- Check if the table exists
+    RAISE NOTICE 'Filepath: %, Schema: %, Table: %', filepath, schemaname, tablename;
+    
+    
     IF NOT EXISTS (
         SELECT 1 
         FROM information_schema.tables 
         WHERE table_schema = schemaname AND table_name = tablename
     ) THEN
-        -- Debug: Table creation log
+        
         RAISE NOTICE 'Table % does not exist, creating it...', tablename;
 
-        -- Dynamically create the table if it doesn't exist
         EXECUTE format('
-            CREATE TABLE equity.%I (
+            CREATE TABLE %I.%I (
                 race FLOAT, 
                 tripmode FLOAT,
                 psexpfac FLOAT,
@@ -81,18 +75,18 @@ BEGIN
                 tripmode2 FLOAT,
                 timecat2 FLOAT,
                 ttravtime FLOAT
-            )', tablename);
+            )', schemaname, tablename);
 
-        -- Debug: Log CSV import action
+        
         RAISE NOTICE 'Importing CSV data from file: % into table %', filepath, tablename;
 
-        -- Import CSV data
-        EXECUTE format('COPY equity.%I FROM %L WITH CSV HEADER', tablename, filepath);
+        
+        EXECUTE format('COPY %I.%I FROM %L WITH CSV HEADER', schemaname, tablename, filepath);
 
-        -- Debug: Successful completion log
+        
         RAISE NOTICE 'Data import completed successfully for table %', tablename;
     ELSE
-        -- Debug: Table already exists, no action taken
+        
         RAISE NOTICE 'Table % already exists, no action taken.', tablename;
     END IF;
 END;

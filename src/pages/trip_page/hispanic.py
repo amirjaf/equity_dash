@@ -5,152 +5,130 @@ import dash_bootstrap_components as dbc
 # local imports
 from components.pie_chart_AIO import PieChartAIO
 from components.line_chart_AIO import LineChartAIO
+from utils.settings import TRIP_TABLE_NAME
 
 dash.register_page(
-
-    __name__,
-    path='/trip_based/page_hispanic',
-    title='Hispanic Analysis'
+    __name__, path="/trip_based/page_hispanic", title="Hispanic Analysis"
 )
 
 dropdowns_pie_charts = {
-    'dpurp2': {
-        'label': 'Purpose',
-        'options': [
-            {'label': 'Work', 'value': 1},
-            {'label': 'School', 'value': 2},
-            {'label': 'Others', 'value': 3},
-        ]
-
+    "dpurp2": {
+        "label": "Purpose",
+        "options": [
+            {"label": "Work", "value": 1},
+            {"label": "School", "value": 2},
+            {"label": "Others", "value": 3},
+        ],
     },
-    'ocounty': {
-        'label': 'Origin County',
-        'options': [
-
-            {'label': 'All Counties', 'value': 'all'},
-            {'label': 'Bucks', 'value': 1},
-            {'label': 'Chester', 'value': 2},
-            {'label': 'Delaware', 'value': 3},
-            {'label': 'Montgomery', 'value': 4},
-            {'label': 'Philadelphia', 'value': 5},
-            {'label': 'Burlington', 'value': 6},
-            {'label': 'Camden', 'value': 7},
-            {'label': 'Gloucester', 'value': 8},
-        ]
-
+    "ocounty": {
+        "label": "Origin County",
+        "options": [
+            {"label": "All Counties", "value": "all"},
+            {"label": "Bucks", "value": 1},
+            {"label": "Chester", "value": 2},
+            {"label": "Delaware", "value": 3},
+            {"label": "Montgomery", "value": 4},
+            {"label": "Philadelphia", "value": 5},
+            {"label": "Burlington", "value": 6},
+            {"label": "Camden", "value": 7},
+            {"label": "Gloucester", "value": 8},
+        ],
     },
-    'lowinc': {
-        'label': 'Income Level',
-        'options': [
-
-            {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 1},
-            {'label': 'Above Poverty Line', 'value': 2},
-            {'label': 'Below Poverty Line', 'value': 3},
-        ]
-
-    }
+    "lowinc": {
+        "label": "Income Level",
+        "options": [
+            {"label": "All Income Level", "value": "all"},
+            {"label": "Above 2x Poverty Line", "value": 1},
+            {"label": "Above Poverty Line", "value": 2},
+            {"label": "Below Poverty Line", "value": 3},
+        ],
+    },
 }
 
 pivots_pie_charts = {
-    'index': {
-        'attribute': 'hisp_b',
-        'labels': {  
-            0: 'Non-hispanic',
-            1: 'Hispanic',
-        }
+    "index": {
+        "attribute": "hisp_b",
+        "labels": {
+            0: "Non-hispanic",
+            1: "Hispanic",
+        },
     },
-    'column': {
-        'attribute': 'tripmode',
-        'labels': {  
-            1: 'SOV',
-            2: 'HOV2',
-            3: 'HOV3+',
-            5: 'Transit',
-            6: 'Bike',
-            7: 'Walk',
-            8: 'School Bus',
-        }
-    }
+    "column": {
+        "attribute": "tripmode",
+        "labels": {
+            1: "SOV",
+            2: "HOV2",
+            3: "HOV3+",
+            5: "Transit",
+            6: "Bike",
+            7: "Walk",
+            8: "School Bus",
+        },
+    },
 }
 
 dropdowns_distribution = {
-    'dpurp2': {
-        'label': 'Purpose',
-        'options': [
-            {'label': 'Work', 'value': 1},
-            {'label': 'School', 'value': 2},
-            {'label': 'Others', 'value': 3},
-        ]
-
+    "dpurp2": {
+        "label": "Purpose",
+        "options": [
+            {"label": "Work", "value": 1},
+            {"label": "School", "value": 2},
+            {"label": "Others", "value": 3},
+        ],
     },
-    'tripmode2': {
-        'label': 'Trip Mode',
-        'options': [
-            {'label': 'Auto (SOV, HOV2, HOV3+)', 'value': 1},
-            {'label': 'Transit (Walk To Transit, Drive To Transit)', 'value': 2},
-            {'label': 'Active (Walk, Bike)', 'value': 3},
-        ]
-
+    "tripmode2": {
+        "label": "Trip Mode",
+        "options": [
+            {"label": "Auto (SOV, HOV2, HOV3+)", "value": 1},
+            {"label": "Transit (Walk To Transit, Drive To Transit)", "value": 2},
+            {"label": "Active (Walk, Bike)", "value": 3},
+        ],
     },
-
-    'ocounty': {
-        'label': 'Origin County',
-        'options': [
-
-            {'label': 'All Counties', 'value': 'all'},
-            {'label': 'Bucks', 'value': 1},
-            {'label': 'Chester', 'value': 2},
-            {'label': 'Delaware', 'value': 3},
-            {'label': 'Montgomery', 'value': 4},
-            {'label': 'Philadelphia', 'value': 5},
-            {'label': 'Burlington', 'value': 6},
-            {'label': 'Camden', 'value': 7},
-            {'label': 'Gloucester', 'value': 8},
-        ]
-
+    "ocounty": {
+        "label": "Origin County",
+        "options": [
+            {"label": "All Counties", "value": "all"},
+            {"label": "Bucks", "value": 1},
+            {"label": "Chester", "value": 2},
+            {"label": "Delaware", "value": 3},
+            {"label": "Montgomery", "value": 4},
+            {"label": "Philadelphia", "value": 5},
+            {"label": "Burlington", "value": 6},
+            {"label": "Camden", "value": 7},
+            {"label": "Gloucester", "value": 8},
+        ],
     },
-    'lowinc': {
-        'label': 'Income Level',
-        'options': [
-
-            {'label': 'All Income Level', 'value': 'all'},
-            {'label': 'Above 2x Poverty Line', 'value': 0},
-            {'label': 'Above Poverty Line', 'value': 1},
-            {'label': 'Below Poverty Line', 'value': 2},
-        ]
-
-    }
+    "lowinc": {
+        "label": "Income Level",
+        "options": [
+            {"label": "All Income Level", "value": "all"},
+            {"label": "Above 2x Poverty Line", "value": 0},
+            {"label": "Above Poverty Line", "value": 1},
+            {"label": "Below Poverty Line", "value": 2},
+        ],
+    },
 }
 
 pivots_dist_distance = {
-    'index': {
-        'attribute': 'hisp_b',
-        'labels': {  
-            0: 'Non-hispanic',
-            1: 'Hispanic',
-        }
+    "index": {
+        "attribute": "hisp_b",
+        "labels": {
+            0: "Non-hispanic",
+            1: "Hispanic",
+        },
     },
-    'column': {
-        'attribute': 'travdist',
-        'labels': {  # continues variable
-        }
-    }
+    "column": {"attribute": "travdist", "labels": {}},  # continues variable
 }
 
 pivots_dist_duration = {
-    'index': {
-        'attribute': 'hisp_b',
-        'labels': {  
-            0: 'Non-hispanic',
-            1: 'Hispanic',
-        }
+    "index": {
+        "attribute": "hisp_b",
+        "labels": {
+            0: "Non-hispanic",
+            1: "Hispanic",
+        },
     },
-    'column': {
-        'attribute': 'ttravtime',
-        'labels': {  # continues variable
-        }
-    }
+    "column": {"attribute": "ttravtime", "labels": {}},  # continues variable
 }
 
 # Layout
@@ -160,50 +138,46 @@ layout = dbc.Container(
         dbc.Row(
             dbc.Col(
                 PieChartAIO(
-                    'trip_data_processed_0701',
+                    TRIP_TABLE_NAME,
                     dropdowns=dropdowns_pie_charts,
-                    pivot_elements=pivots_pie_charts, # pivot table index and columns
-                    activity_type='Trip', # default is Travel
-                    aio_id='hisp_mode_share_trip'
+                    pivot_elements=pivots_pie_charts,  # pivot table index and columns
+                    activity_type="Trip",  # default is Travel
+                    aio_id="hisp_mode_share_trip",
                 ),
-                width=12  # Full width for all screen sizes
+                width=12,  # Full width for all screen sizes
             ),
-            className="mb-5"  # Add space between rows
+            className="mb-5",  # Add space between rows
         ),
-        
         # Second chart - LineChartAIO (Distance)
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    'trip_data_processed_0701',
+                    TRIP_TABLE_NAME,
                     dropdowns=dropdowns_distribution,
-                    pivot_elements=pivots_dist_distance, # pivot table index and columns
-                    kind='Distance',
-                    activity_type='Trip',
-                    aio_id='hisp_distance_distribution_trip'
+                    pivot_elements=pivots_dist_distance,  # pivot table index and columns
+                    kind="Distance",
+                    activity_type="Trip",
+                    aio_id="hisp_distance_distribution_trip",
                 ),
-                width=12  # Full width for all screen sizes
+                width=12,  # Full width for all screen sizes
             ),
-            className="mb-5"  # Add space after the second row
+            className="mb-5",  # Add space after the second row
         ),
-        
         # Third chart - LineChartAIO (Travel Time)
         dbc.Row(
             dbc.Col(
                 LineChartAIO(
-                    'trip_data_processed_0701',
+                    TRIP_TABLE_NAME,
                     dropdowns=dropdowns_distribution,
-                    pivot_elements=pivots_dist_duration, # pivot table index and columns
-                    kind='Duration',
-                    activity_type='Trip',
-                    aio_id='hisp_travel_time_distribution_trip'
+                    pivot_elements=pivots_dist_duration,  # pivot table index and columns
+                    kind="Duration",
+                    activity_type="Trip",
+                    aio_id="hisp_travel_time_distribution_trip",
                 ),
-                width=12  # Full width for all screen sizes
+                width=12,  # Full width for all screen sizes
             ),
-            className="mb-5"  # Add space after the third row
+            className="mb-5",  # Add space after the third row
         ),
     ],
-    fluid=True
+    fluid=True,
 )
-
-

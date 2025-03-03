@@ -4,7 +4,8 @@ import pandas as pd
 from .db_connection import engine
 
 # CONSTANTS
-PERSON_WEIGHT = 'psexpfac'
+PERSON_WEIGHT = "psexpfac"
+
 
 def filter_and_pivot(table_name, conditions, var1, var2):
     """
@@ -17,24 +18,31 @@ def filter_and_pivot(table_name, conditions, var1, var2):
         var2 (str): Column for pivot columns. Example: 'mode'
 
     Returns:
-        pd.DataFrame: Pivot table with aggregated sums. 
+        pd.DataFrame: Pivot table with aggregated sums.
                       The index will be `var1`, the columns will be `var2`, and the values will be the sum of `PERSON_WEIGHT`.
     """
 
     where_clause = " AND ".join([f"{col} = :{col}" for col in conditions])
     where_clause = f"WHERE {where_clause}" if conditions else ""
 
-    sql_query = text(f"""
+    sql_query = text(
+        f"""
         SELECT {var1}, {var2}, SUM({PERSON_WEIGHT}) AS weight_sum
         FROM {table_name}
         {where_clause} AND {var2} IS NOT NULL
         GROUP BY {var1}, {var2}
-    """)
+    """
+    )
 
     with engine.connect() as conn:
         df = pd.read_sql(sql_query, conn, params=conditions)
 
-    return df.pivot(index=var1, columns=var2, values='weight_sum').sort_index(axis=0).sort_index(axis=1).fillna(0)
+    return (
+        df.pivot(index=var1, columns=var2, values="weight_sum")
+        .sort_index(axis=0)
+        .sort_index(axis=1)
+        .fillna(0)
+    )
 
 
 def filter_and_list(table_name, conditions, var1, var2):
@@ -54,14 +62,16 @@ def filter_and_list(table_name, conditions, var1, var2):
     where_clause = " AND ".join([f"{col} = :{col}" for col in conditions])
     where_clause = f"WHERE {where_clause}" if conditions else ""
 
-    sql_query = text(f"""
+    sql_query = text(
+        f"""
         SELECT {var1}, 
                array_agg({var2}) AS {var2}_values
         FROM {table_name}
         {where_clause}
         GROUP BY {var1}
         ORDER BY {var1}
-    """)
+    """
+    )
 
     with engine.connect() as conn:
         result = conn.execute(sql_query, conditions)
@@ -70,13 +80,34 @@ def filter_and_list(table_name, conditions, var1, var2):
     return {row[0]: row[1] for row in rows}
 
 
+def get_table_names(schema):
+    """
+    Get the names of all tables in the database.
+
+    Returns:
+        list: A list of table names.
+    """
+    with engine.connect() as conn:
+        result = conn.execute(
+            text(
+                """
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = :schema
+            """
+            ),
+            {"schema": schema},
+        )
+        return [row[0] for row in result.fetchall()]
+
+
 if __name__ == "__main__":
     # TEST
-    table_name = 'tour_data_processed_0701'
-    conditions = {'pdpurp2': 1, 'ocounty': 5}
-    var1 = 'race'
-    var2 = 'tourmode'
+    table_name = "tour_data_processed_0701"
+    conditions = {"pdpurp2": 1, "ocounty": 5}
+    var1 = "race"
+    var2 = "tourmode"
     print(filter_and_pivot(table_name, conditions, var1, var2))
-    var1 = 'race'
-    var2 = 'tautodist'
+    var1 = "race"
+    var2 = "tautodist"
     print(filter_and_list(table_name, conditions, var1, var2))

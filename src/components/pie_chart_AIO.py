@@ -1,5 +1,5 @@
 # Notes
-'''
+"""
 - This AIO generates pie chart cards with a dynamic dictionary of dropdowns, 
 which act as filters for the data, enabling pivoting based on two distinct variables.
 - The number of pie charts created corresponds to the number of entries in the index variable, 
@@ -8,7 +8,7 @@ and the number of categories in each chart matches the length of the column list
 
 For more information about AIO components, check out the official documentation:
 https://dash.plotly.com/all-in-one-components
-'''
+"""
 
 # Package imports
 from dash import html, dcc, callback, Output, Input, State
@@ -28,12 +28,14 @@ class PieChartAIO(html.Div):
 
         def generate(self, subcomponent, aio_id):
             return {
-                'component': self.parent_class_name,
-                'subcomponent': subcomponent,
-                'aio_id': aio_id
+                "component": self.parent_class_name,
+                "subcomponent": subcomponent,
+                "aio_id": aio_id,
             }
 
-    def __init__(self, table_name, dropdowns, pivot_elements, activity_type='Travel', aio_id=None):
+    def __init__(
+        self, table_name, dropdowns, pivot_elements, activity_type="Travel", aio_id=None
+    ):
         if aio_id is None:
             aio_id = str(uuid.uuid4())
 
@@ -41,17 +43,16 @@ class PieChartAIO(html.Div):
         self.activity_type = activity_type
         self.table_name = table_name
         self.dropdowns = dropdowns
-        self.index_name = pivot_elements['index']['attribute']
-        self.index_labels = pivot_elements['index']['labels']
-        self.column_name = pivot_elements['column']['attribute']
-        self.column_labels = pivot_elements['column']['labels']
-        
+        self.index_name = pivot_elements["index"]["attribute"]
+        self.index_labels = pivot_elements["index"]["labels"]
+        self.column_name = pivot_elements["column"]["attribute"]
+        self.column_labels = pivot_elements["column"]["labels"]
 
         # initiate the id generator
         self.ids_instance = PieChartAIO.ids(self.__class__.__name__)
         # initiate id for the store and output in the front end html
-        self.store_id = self.ids_instance.generate('store', self.aio_id)
-        self.output_id = self.ids_instance.generate('output', self.aio_id)
+        self.store_id = self.ids_instance.generate("store", self.aio_id)
+        self.output_id = self.ids_instance.generate("output", self.aio_id)
 
         self.component_style = {
             "font-family": "Arial, sans-serif",
@@ -59,20 +60,20 @@ class PieChartAIO(html.Div):
             "padding": "20px",
             "background-color": "#f9f9f9",
             "border-radius": "8px",
-            "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
+            "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
         }
 
         self.color_palette = [
-            'rgba(31, 119, 180, 1)',  # Blue
-            'rgba(255, 127, 14, 1)',  # Orange
-            'rgba(44, 160, 44, 1)',   # Green
-            'rgba(214, 39, 40, 1)',   # Red
-            'rgba(148, 103, 189, 1)', # Purple
-            'rgba(140, 86, 75, 1)',   # Brown
-            'rgba(227, 119, 194, 1)', # Pink
-            'rgba(127, 127, 127, 1)', # Gray
-            'rgba(188, 189, 34, 1)',  # Olive
-            'rgba(23, 190, 207, 1)'   # Cyan
+            "rgba(31, 119, 180, 1)",  # Blue
+            "rgba(255, 127, 14, 1)",  # Orange
+            "rgba(44, 160, 44, 1)",  # Green
+            "rgba(214, 39, 40, 1)",  # Red
+            "rgba(148, 103, 189, 1)",  # Purple
+            "rgba(140, 86, 75, 1)",  # Brown
+            "rgba(227, 119, 194, 1)",  # Pink
+            "rgba(127, 127, 127, 1)",  # Gray
+            "rgba(188, 189, 34, 1)",  # Olive
+            "rgba(23, 190, 207, 1)",  # Cyan
         ]
 
         super().__init__(
@@ -81,17 +82,24 @@ class PieChartAIO(html.Div):
                     dbc.Row(
                         dbc.Col(
                             [
-                                html.H1(f"{self.activity_type} Mode Share", style={'text-align': 'left'}),
+                                html.H1(
+                                    f"{self.activity_type} Mode Share",
+                                    style={"text-align": "left"},
+                                ),
                                 *self.generate_dropdowns(self.dropdowns),
-                                html.Div(id=self.output_id, children=[], style={'margin-top': '30px'}),
+                                html.Div(
+                                    id=self.output_id,
+                                    children=[],
+                                    style={"margin-top": "30px"},
+                                ),
                             ],
                             width=12,
-                            style={'height': '100vh', 'padding': '10px'}
+                            style={"height": "100vh", "padding": "10px"},
                         ),
-                        justify='center',
-                        align='start',
+                        justify="center",
+                        align="start",
                     ),
-                    dcc.Store(id=self.store_id, data=[])
+                    dcc.Store(id=self.store_id, data=[]),
                 ],
                 style=self.component_style,
                 className="container-fluid",
@@ -104,18 +112,24 @@ class PieChartAIO(html.Div):
         return [
             dbc.Row(
                 [
-                    dbc.Col(html.Label(f"Select {dropdown['label']}:", style={'font-weight': 'bold'}), width=12),
+                    dbc.Col(
+                        html.Label(
+                            f"Select {dropdown['label']}:",
+                            style={"font-weight": "bold"},
+                        ),
+                        width=12,
+                    ),
                     dbc.Col(
                         dcc.Dropdown(
                             id=self.ids_instance.generate(key, self.aio_id),
-                            options=dropdown['options'],
+                            options=dropdown["options"],
                             placeholder=f"Choose the {dropdown['label'].lower()}",
-                            value=dropdown['options'][0]['value']
+                            value=dropdown["options"][0]["value"],
                         ),
                         width=6,
                     ),
                 ],
-                style={'margin-bottom': '15px'}
+                style={"margin-bottom": "15px"},
             )
             for key, dropdown in dropdown_dict.items()
         ]
@@ -131,7 +145,7 @@ class PieChartAIO(html.Div):
                             "border": "1px solid #ddd",
                             "border-radius": "8px",
                             "background-color": "#f9f9f9",
-                            "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
+                            "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
                         },
                     ),
                     width=6,
@@ -140,29 +154,28 @@ class PieChartAIO(html.Div):
             ],
             justify="left",
             align="start",
-            className="g-4"
+            className="g-4",
         )
 
     def create_pie_charts(self, table):
         return [
             dcc.Graph(
-                figure=self.get_pie_chart_data(row, index),
-                id=f'pie-chart-{index}'
+                figure=self.get_pie_chart_data(row, index), id=f"pie-chart-{index}"
             )
             for index, row in table.iterrows()
         ]
 
     def get_pie_chart_data(self, row, index):
-        colors = self.color_palette[:len(self.column_labels)]
+        colors = self.color_palette[: len(self.column_labels)]
         pie_chart = go.Figure(
             data=[
                 go.Pie(
                     labels=[self.column_labels[index] for index in row.index],
                     values=row.values,
-                    textinfo='label+percent',
-                    insidetextorientation='horizontal',
+                    textinfo="label+percent",
+                    insidetextorientation="horizontal",
                     hole=0.3,
-                    marker=dict(colors=colors)
+                    marker=dict(colors=colors),
                 )
             ]
         )
@@ -173,33 +186,47 @@ class PieChartAIO(html.Div):
         )
         return pie_chart
 
-    def global_store(self, filters, var1, var2):
-        filtered_data = filter_and_pivot(self.table_name, {k: v for k, v in filters.items() if v != 'all'}, var1, var2)
+    def global_store(self, table_name, filters, var1, var2):
+        filtered_data = filter_and_pivot(
+            table_name, {k: v for k, v in filters.items() if v != "all"}, var1, var2
+        )
         return filtered_data
 
     @cache.memoize()
-    def make_pie_charts(self, data, _id):
-        table = self.global_store(data['filters'], data['row_name'], data['column_name'])
+    def make_pie_charts(self, data, table_name, _id):
+        table = self.global_store(
+            table_name, data["filters"], data["row_name"], data["column_name"]
+        )
         return self.pie_charts_grid(self.create_pie_charts(table))
 
     def register_callbacks(self):
         @callback(
-            Output(self.store_id, 'data'),
-            [Input(self.ids_instance.generate(key, self.aio_id), 'value') for key in self.dropdowns.keys()]
+            Output(self.store_id, "data"),
+            [
+                *[
+                    Input(self.ids_instance.generate(key, self.aio_id), "value")
+                    for key in self.dropdowns.keys()
+                ],
+                Input("selected-table", "data"),
+            ],
         )
         def compute_value(*values):
-            dropdown_values = dict(zip(self.dropdowns.keys(), values))
+            dropdown_count = len(self.dropdowns.keys())
+            dropdown_values = dict(zip(self.dropdowns.keys(), values[:dropdown_count]))
+            selected_table = self.table_name + "_" + str(values[dropdown_count])
             state_data = {
-                'filters': dropdown_values,
-                'row_name': self.index_name,
-                'column_name': self.column_name,
+                "filters": dropdown_values,
+                "row_name": self.index_name,
+                "column_name": self.column_name,
             }
-            self.make_pie_charts(state_data, self.aio_id)
+            self.make_pie_charts(state_data, selected_table, self.aio_id)
             return state_data
 
         @callback(
-            Output(self.output_id, 'children'),
-            Input(self.store_id, 'data')
+            Output(self.output_id, "children"),
+            Input(self.store_id, "data"),
+            Input("selected-table", "data"),
         )
-        def update_graph(data):
-            return self.make_pie_charts(data, self.aio_id)
+        def update_graph(data, table_name):
+            table_name = self.table_name + "_" + str(table_name)
+            return self.make_pie_charts(data, table_name, self.aio_id)

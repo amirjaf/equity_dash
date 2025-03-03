@@ -1,8 +1,8 @@
 # notes
-'''
+"""
 This file is for housing the main dash application.
 This is where we define the various css items to fetch as well as the layout of our application.
-'''
+"""
 
 # package imports
 import dash
@@ -14,8 +14,19 @@ import os
 from dash import Input, Output, callback
 
 # local imports
-from utils.settings import APP_HOST, APP_PORT, APP_DEBUG, DEV_TOOLS_PROPS_CHECK, USE_RELOADER
-from components import navbar, footer, navbar_vertical_tour_page, navbar_vertical_trip_page
+from utils.settings import (
+    APP_HOST,
+    APP_PORT,
+    APP_DEBUG,
+    DEV_TOOLS_PROPS_CHECK,
+    USE_RELOADER,
+)
+from components import (
+    navbar,
+    footer,
+    navbar_vertical_tour_page,
+    navbar_vertical_trip_page,
+)
 
 from server import server
 
@@ -23,44 +34,37 @@ from server import server
 dash_app = dash.Dash(
     __name__,
     server=server,
-    use_pages=True,  
-    external_stylesheets=[
-        dbc.themes.BOOTSTRAP,
-        dbc.icons.FONT_AWESOME
-    ],  
-    meta_tags=[  
-        {
-            'name': 'viewport',
-            'content': 'width=device-width, initial-scale=1'
-        }
-    ],
+    use_pages=True,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.FONT_AWESOME],
+    meta_tags=[{"name": "viewport", "content": "width=device-width, initial-scale=1"}],
     suppress_callback_exceptions=True,
     url_base_pathname="/",
-    title='Dash app structure'
+    title="Dash app structure",
 )
 
 
 def serve_layout():
-    '''Define the layout of the application'''
+    """Define the layout of the application"""
     return html.Div(
         [
             dcc.Location(id="url", refresh=False),  # URL bar
+            dcc.Store(id="selected-table", storage_type="session"),
             navbar,  # Horizontal navbar visible on all pages
             # Vertical navbar container. We need one container for each page.
             html.Div(
-                id="vertical-navbar-container_1",  
+                id="vertical-navbar-container_1",
             ),
             html.Div(
-                id="vertical-navbar-container_2", 
+                id="vertical-navbar-container_2",
             ),
             html.Div(
                 dash.page_container,  # Page-specific content managed by Dash
                 style={
-                    "marginLeft": "250px", 
-                    "padding": "1rem",  
+                    "marginLeft": "250px",
+                    "padding": "1rem",
                     "height": "calc(100vh - 60px)",  # Full height minus the horizontal navbar height
-                    "overflowY": "auto",  
-                    "position": "relative",  
+                    "overflowY": "auto",
+                    "position": "relative",
                     "paddingTop": "60px",  # Offset for the horizontal navbar height
                 },
             ),
@@ -75,7 +79,8 @@ def serve_layout():
 
 
 # set up the layout
-dash_app.layout = serve_layout 
+dash_app.layout = serve_layout
+
 
 # NOTE: It is a bit dirty. But, Flask server needs to have a route explicitly for the starting page (i.e., "/")
 @server.route("/")
@@ -91,15 +96,15 @@ def MyDashApp():
     Input("url", "pathname"),
 )
 def toggle_vertical_navbar(pathname):
-    '''
+    """
     Toggle the vertical navbar based on the URL
-    '''
+    """
     if pathname.startswith("/tour_based"):
-        return navbar_vertical_tour_page, {'display': 'block'}, "", {'display': 'none'}
+        return navbar_vertical_tour_page, {"display": "block"}, "", {"display": "none"}
 
     elif pathname.startswith("/trip_based"):
-        return "", {'display': 'none'}, navbar_vertical_trip_page, {'display': 'block'}
-    
+        return "", {"display": "none"}, navbar_vertical_trip_page, {"display": "block"}
+
     else:
         return "", {}, "", {}
 
@@ -107,11 +112,10 @@ def toggle_vertical_navbar(pathname):
 server = dash_app.server  # the server is needed to deploy the application
 
 if __name__ == "__main__":
-
     dash_app.run_server(
         host=APP_HOST,
         port=APP_PORT,
         debug=APP_DEBUG,
         dev_tools_props_check=DEV_TOOLS_PROPS_CHECK,
-        use_reloader=USE_RELOADER
+        use_reloader=USE_RELOADER,
     )
