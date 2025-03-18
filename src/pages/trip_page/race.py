@@ -119,7 +119,7 @@ pivots_dist_distance = {
             4: "Others Race",
         },
     },
-    "column": {"attribute": "travdist", "labels": {}},  # continues variable
+    "column": {"attribute": "distcat", "labels": {}},
 }
 
 pivots_dist_duration = {
@@ -132,7 +132,7 @@ pivots_dist_duration = {
             4: "Others Race",
         },
     },
-    "column": {"attribute": "ttravtime", "labels": {}},  # continues variable
+    "column": {"attribute": "timecat_smooth", "labels": {}},
 }
 
 # Layout
