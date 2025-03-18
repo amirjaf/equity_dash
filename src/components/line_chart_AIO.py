@@ -17,7 +17,7 @@ from scipy.stats import gaussian_kde
 import numpy
 
 # Local imports
-from utils.db_requests import filter_and_list
+from utils.db_requests import filter_and_list, filter_and_average
 from cache import cache
 
 
@@ -158,24 +158,24 @@ class LineChartAIO(html.Div):
         ]
 
     # methods
-    def data_processing(self, table_name, filters, var1, var2):
+    def data_processing_distribution(self, table_name, filters, var1, var2):
         filters_copy = {key: value for key, value in filters.items() if value != "all"}
         filtered_df = filter_and_list(table_name, filters_copy, var1, var2)
         return filtered_df
 
-    def creat_kde_xy(self, dict, bw_method="silverman", bw_adjust=0.3, bin_number=150):
-        kde_dict = {}
-        for key, numbers in dict.items():
-            numbers = numpy.array(numbers)
-            numbers = numpy.trunc(numbers * 100) / 100
-            kde = gaussian_kde(numbers, bw_method=bw_method)
-            kde.set_bandwidth(bw_method=kde.factor * bw_adjust)  # adjust the factor
-            x_kde = numpy.linspace(min(numbers), max(numbers), bin_number)
-            y_kde = kde(x_kde)
-            kde_dict[key] = (x_kde, y_kde)
-        return kde_dict
+    # def creat_kde_xy(self, dict, bw_method="silverman", bw_adjust=0.3, bin_number=150):
+    #     kde_dict = {}
+    #     for key, numbers in dict.items():
+    #         numbers = numpy.array(numbers)
+    #         numbers = numpy.trunc(numbers * 100) / 100
+    #         kde = gaussian_kde(numbers, bw_method=bw_method)
+    #         kde.set_bandwidth(bw_method=kde.factor * bw_adjust)  # adjust the factor
+    #         x_kde = numpy.linspace(min(numbers), max(numbers), bin_number)
+    #         y_kde = kde(x_kde)
+    #         kde_dict[key] = (x_kde, y_kde)
+    #     return kde_dict
 
-    def create_kde_graph(self, kde_dict, opacity=0.5):
+    def create_distr_graph(self, distr_dict, opacity=0.5):
         # Define a high-contrast custom color palette
         color_palette = [
             "rgba(31, 119, 180, {opacity})",  # Blue
@@ -190,19 +190,17 @@ class LineChartAIO(html.Div):
             "rgba(23, 190, 207, {opacity})",  # Cyan
         ]
 
-        # Assign colors dynamically while ensuring a loop if there are more categories than colors
         category_to_color = {
             int(i): color_palette[(int(i) - 1) % len(color_palette)].format(
                 opacity=opacity
             )
-            for i in kde_dict
+            for i in distr_dict
         }
 
-        # Prepare the data for the scatter plot
         data = [
             go.Scatter(
-                x=kde_dict[category][0],  # kde_x
-                y=kde_dict[category][1],  # kde_y
+                x=list(range(len(distr_dict[category]))),  
+                y=distr_dict[category],  
                 mode="lines",
                 line=dict(width=3.0, color=category_to_color[category]),
                 fill="tozeroy",
@@ -211,14 +209,14 @@ class LineChartAIO(html.Div):
                 ],  # Fill area under curve with the same color
                 name=f"{self.index_labels[category]}",  # Display the name in the legend
             )
-            for category in kde_dict
+            for category in distr_dict
         ]
 
         # Create the Plotly figure
         figure = go.Figure(
             data=data,
             layout=go.Layout(
-                title="KDEs Distribution",
+                title="Distribution",
                 xaxis={"title": f"{self.kind} {self.unit}"},
                 yaxis={"title": "Density"},
                 margin={
@@ -226,7 +224,7 @@ class LineChartAIO(html.Div):
                     "b": 40,
                     "t": 40,
                     "r": 0,
-                },  # Adjust margins for readability
+                },
             ),
         )
         # Return the figure wrapped inside a dcc.Graph component
@@ -272,12 +270,14 @@ class LineChartAIO(html.Div):
     # final function to make the line graph
     @cache.memoize()
     def make_line_graph(self, table_name, dict, var1, var2, _id):
-        dict = self.data_processing(table_name, dict, var1, var2)
-        return self.create_kde_graph(self.creat_kde_xy(dict))
+        filters = {key: value for key, value in dict.items() if value != "all"}
+        dict = filter_and_list(table_name, filters, var1, var2)
+        return self.create_distr_graph(dict)
 
     @cache.memoize()
     def make_table(self, table_name, dict, var1, var2, _id):
-        dict = self.data_processing(table_name, dict, var1, var2)
+        filters = {key: value for key, value in dict.items() if value != "all"}
+        dict = filter_and_average(table_name, filters, var1, var2)
         return self.create_average_table(dict)
 
     def register_callbacks(self):
@@ -338,5 +338,5 @@ class LineChartAIO(html.Div):
                     data["row_name"],
                     data["column_name"],
                     self.aio_id,
-                ),
+                )
             )
