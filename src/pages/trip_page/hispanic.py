@@ -117,7 +117,7 @@ pivots_dist_distance = {
             1: "Hispanic",
         },
     },
-    "column": {"attribute": "travdist", "labels": {}},  # continues variable
+    "column": {"attribute": "distcat", "labels": {}},
 }
 
 pivots_dist_duration = {
@@ -128,7 +128,7 @@ pivots_dist_duration = {
             1: "Hispanic",
         },
     },
-    "column": {"attribute": "ttravtime", "labels": {}},  # continues variable
+    "column": {"attribute": "timecat_smooth", "labels": {}},
 }
 
 # Layout

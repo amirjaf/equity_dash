@@ -119,7 +119,7 @@ pivots_dist_distance = {
             2: "Below Poverty Line",
         },
     },
-    "column": {"attribute": "tautodist", "labels": {}},  # continues variable
+    "column": {"attribute": "distcat", "labels": {}},
 }
 
 pivots_dist_duration = {
@@ -131,7 +131,7 @@ pivots_dist_duration = {
             2: "Below Poverty Line",
         },
     },
-    "column": {"attribute": "ttravtime", "labels": {}},  # continues variable
+    "column": {"attribute": "timecat_smooth", "labels": {}},
 }
 
 # Layout
